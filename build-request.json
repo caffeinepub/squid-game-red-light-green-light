@@ -1,0 +1,204 @@
+{
+  "kind": "build_request",
+  "title": "Squid Game Red Light Green Light — Core Game (No MediaPipe)",
+  "projectName": "Squid Game",
+  "priority": "normal",
+  "requirements": [
+    {
+      "id": "REQ-1",
+      "text": "Build a single-page React game layout with a Squid Game aesthetic: near-black background, hot pink / red accents (#FF0066 / #FF3333), stark white text, bold cinematic typography, and a full-viewport dark game container.",
+      "target": "frontend",
+      "source": {
+        "messageIds": [
+          "msg-2",
+          "msg-9"
+        ],
+        "quotes": [
+          "Squid Game aesthetic: dark background, pink/red accents, Korean-inspired typography feel, cinematic UI",
+          "sure try that"
+        ]
+      },
+      "acceptanceCriteria": [
+        "Page background is near-black (#0a0a0a or similar).",
+        "Primary accent color is hot pink/red (#FF0066).",
+        "Typography feels bold and cinematic.",
+        "Layout fills the full viewport."
+      ]
+    },
+    {
+      "id": "REQ-2",
+      "text": "Implement game state machine with the following states: idle, countdown (3-2-1), green-light, red-light, eliminated, and won. Randomize green/red light durations (2–6 seconds each), with occasional dramatic long red-light holds.",
+      "target": "frontend",
+      "source": {
+        "messageIds": [
+          "msg-2",
+          "msg-4"
+        ]
+      },
+      "acceptanceCriteria": [
+        "Game starts in idle state with a Start button.",
+        "Pressing Start triggers a 3-2-1 countdown before entering green-light.",
+        "Green Light and Red Light states alternate with randomized durations between 2–6 seconds.",
+        "Occasionally, a red-light hold lasts noticeably longer (dramatic pause).",
+        "Game transitions to eliminated or won states correctly."
+      ]
+    },
+    {
+      "id": "REQ-3",
+      "text": "Create a movement detection stub using the device webcam via getUserMedia. Draw the raw webcam feed onto a canvas element. Compare pixel/motion data frame-to-frame (no pose landmarks yet) to produce a movement score. Apply smoothing by averaging movement scores across the last 5–10 frames to reduce false positives.",
+      "target": "frontend",
+      "source": {
+        "messageIds": [
+          "msg-4",
+          "msg-9"
+        ],
+        "quotes": [
+          "Add small movement smoothing to avoid false positives.",
+          "Use requestAnimationFrame loop."
+        ]
+      },
+      "acceptanceCriteria": [
+        "Webcam feed is displayed inside the game canvas.",
+        "A requestAnimationFrame loop drives frame-to-frame comparison.",
+        "Movement score is smoothed across recent frames.",
+        "Movement score is exposed to the game state logic."
+      ]
+    },
+    {
+      "id": "REQ-4",
+      "text": "Progress bar (0–100%) that advances only during Green Light when movement is detected (movement score exceeds threshold). No progress when player is still during Green Light. Reaching 100% triggers the won state.",
+      "target": "frontend",
+      "source": {
+        "messageIds": [
+          "msg-4"
+        ],
+        "quotes": [
+          "Progress bar should fill only during Green Light when movement is detected (player must actively move forward). If no movement during Green Light → no progress."
+        ]
+      },
+      "acceptanceCriteria": [
+        "Progress bar is visible at all times during play.",
+        "Progress only increases during green-light when movement score > threshold.",
+        "Progress does not increase when player is still during green-light.",
+        "Reaching 100% ends the game with a won state."
+      ]
+    },
+    {
+      "id": "REQ-5",
+      "text": "Immediate elimination: if movement score exceeds the threshold during red-light, instantly transition to the eliminated state. No grace period.",
+      "target": "frontend",
+      "source": {
+        "messageIds": [
+          "msg-4"
+        ],
+        "quotes": [
+          "Elimination should be immediate when movement exceeds threshold during Red Light. No grace period."
+        ]
+      },
+      "acceptanceCriteria": [
+        "Any movement above threshold during red-light immediately triggers eliminated state.",
+        "No delay or grace period before elimination.",
+        "Eliminated screen shows progress percentage and survival time."
+      ]
+    },
+    {
+      "id": "REQ-6",
+      "text": "Adjustable sensitivity slider that controls the movement detection threshold. Lower value = more forgiving; higher value = more strict.",
+      "target": "frontend",
+      "source": {
+        "messageIds": [
+          "msg-2",
+          "msg-4"
+        ],
+        "quotes": [
+          "Adjustable sensitivity slider for movement threshold",
+          "Keep movement threshold adjustable."
+        ]
+      },
+      "acceptanceCriteria": [
+        "A labeled slider is visible in the UI.",
+        "Adjusting the slider changes the movement threshold in real time.",
+        "Slider range covers a sensible min/max (e.g., 1–100)."
+      ]
+    },
+    {
+      "id": "REQ-7",
+      "text": "Survival timer displayed as a score. Timer starts when the game begins (after countdown) and stops on elimination or win.",
+      "target": "frontend",
+      "source": {
+        "messageIds": [
+          "msg-2"
+        ],
+        "quotes": [
+          "Survival timer displayed as score"
+        ]
+      },
+      "acceptanceCriteria": [
+        "Timer is shown on screen during active gameplay.",
+        "Timer starts after the 3-2-1 countdown.",
+        "Timer stops when the player is eliminated or wins.",
+        "Final time is shown on elimination and win screens."
+      ]
+    },
+    {
+      "id": "REQ-8",
+      "text": "Procedural sound effects using the Web Audio API (no external audio files): a tense buzzer/alarm when Red Light activates, a pleasant chime when Green Light activates, an elimination sound when caught moving, and a victory fanfare on win.",
+      "target": "frontend",
+      "source": {
+        "messageIds": [
+          "msg-2"
+        ],
+        "quotes": [
+          "Procedurally generated sound effects using Web Audio API (no external audio files)"
+        ]
+      },
+      "acceptanceCriteria": [
+        "All sounds are generated programmatically via Web Audio API.",
+        "No external audio files are loaded.",
+        "Red Light trigger plays a tense buzzer/alarm sound.",
+        "Green Light trigger plays a chime/go sound.",
+        "Elimination plays a distinct elimination sound.",
+        "Winning plays a victory fanfare."
+      ]
+    },
+    {
+      "id": "REQ-9",
+      "text": "Display large status text during gameplay: 'GREEN LIGHT' in bright green and 'RED LIGHT' in bright red/pink. Show idle, countdown digits, eliminated, and won screens with appropriate messaging and Start/Restart buttons.",
+      "target": "frontend",
+      "source": {
+        "messageIds": [
+          "msg-2"
+        ],
+        "quotes": [
+          "Status text 'GREEN LIGHT' shown in bright green, 'RED LIGHT' in bright red/pink"
+        ]
+      },
+      "acceptanceCriteria": [
+        "'GREEN LIGHT' text is displayed in bright green (#00FF88 or similar) during green-light state.",
+        "'RED LIGHT' text is displayed in bright red/pink (#FF0066 or similar) during red-light state.",
+        "Countdown shows large digits (3, 2, 1).",
+        "Eliminated screen shows progress % and survival time with a Restart button.",
+        "Won screen shows a victory message and survival time with a Restart button.",
+        "Idle screen shows a Start button."
+      ]
+    }
+  ],
+  "constraints": [
+    "No backend required — this is a fully client-side application.",
+    "Do NOT integrate @mediapipe/pose in this phase; movement detection uses pixel/frame comparison only.",
+    "All audio must be generated via Web Audio API — no external audio files.",
+    "Use requestAnimationFrame for the detection loop.",
+    "Do not edit files under frontend/src/hooks/useInternetIdentity.ts, frontend/src/hooks/useActor.ts, frontend/src/main.tsx, or frontend/src/components/ui."
+  ],
+  "nonGoals": [
+    "MediaPipe Pose integration (deferred to next phase).",
+    "Skeleton overlay drawing (deferred to next phase).",
+    "Backend canister logic.",
+    "Multiplayer or networked gameplay.",
+    "Mobile-specific optimizations."
+  ],
+  "imageRequirements": {
+    "required": [],
+    "edits": []
+  }
+}

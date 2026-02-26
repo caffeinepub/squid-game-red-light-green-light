@@ -1,0 +1,18 @@
+{
+  "frontend/src/index.css": "Global styles with Squid Game aesthetic — near-black background, hot pink/red/green accent tokens, Bebas Neue cinematic typography, custom glow/animation utilities, and full-viewport layout reset.",
+  "frontend/tailwind.config.js": "Extended Tailwind config with Squid Game color palette (game-bg, game-pink, game-red, game-green, game-white, game-dim), Bebas Neue font family, glow box-shadows, and standard shadcn tokens.",
+  "frontend/src/utils/audioEffects.ts": "Web Audio API procedural sound effects — green light chime, red light buzzer/alarm, elimination screech, victory fanfare, and countdown beep; all synthesized with no external audio files.",
+  "frontend/src/hooks/useWebcam.ts": "Custom hook to request webcam access via getUserMedia, attach the stream to a video ref, and expose stream status. Updated `videoRef` type to `RefObject<HTMLVideoElement | null>` for React 19 compatibility.",
+  "frontend/src/hooks/useMovementDetection.ts": "Custom hook running a requestAnimationFrame loop to compute pixel-diff movement scores with 8-frame smoothing. Updated both `videoRef` and `canvasRef` parameter types to `RefObject<T | null>` for React 19 compatibility.",
+  "frontend/src/hooks/useGameState.ts": "Game state machine hook managing idle/countdown/green-light/red-light/eliminated/won phases, randomized light durations, progress tracking (advances only on movement during green-light), immediate elimination on red-light movement, survival timer, and procedural sound triggers.",
+  "frontend/src/components/GameCanvas.tsx": "Renders the webcam feed onto a canvas element with mirroring, integrates useWebcam and useMovementDetection hooks, and shows camera status overlays.",
+  "frontend/src/components/ProgressBar.tsx": "Horizontal progress bar (0–100%) with phase-aware color (green/red/pink), glow effects, shine layer, and milestone markers.",
+  "frontend/src/components/SensitivitySlider.tsx": "Labeled range slider (1–100) for movement detection threshold with dynamic label (Forgiving/Normal/Strict/Brutal) and Squid Game styling.",
+  "frontend/src/components/Timer.tsx": "Displays elapsed survival time in MM:SS.T or SS.Ts format with cinematic Bebas Neue typography.",
+  "frontend/src/components/StatusText.tsx": "Large animated status overlay showing \"GREEN LIGHT\" in bright green or \"RED LIGHT\" in bright red with glow and pulse animations.",
+  "frontend/src/components/CountdownDisplay.tsx": "Animated countdown display (3-2-1) with pop-in animation, cinematic typography, and key-based re-animation on value change.",
+  "frontend/src/components/IdleScreen.tsx": "Welcome/start screen with game title, instructions panel, and a styled Start Game button with Squid Game aesthetic.",
+  "frontend/src/components/EliminatedScreen.tsx": "Elimination result screen showing final progress %, survival time, a progress bar visual, and a Try Again button with red/pink Squid Game styling.",
+  "frontend/src/components/WonScreen.tsx": "Victory screen showing 100% progress, final time, full green progress bar, and a Play Again button with green glow Squid Game styling.",
+  "frontend/src/App.tsx": "Main app component orchestrating all game hooks and components — camera feed, game state, progress bar, sensitivity slider, timer, status overlays, and responsive layout with header/sidebar/footer."
+}

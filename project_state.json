@@ -1,0 +1,110 @@
+{
+  "schemaVersion": "1.0.0",
+  "projectStateVersion": 3,
+  "summary": "Squid Game: Red Light, Green Light browser game. Full-body webcam tracking with MediaPipe Pose (@mediapipe/pose npm package), real-time skeleton overlay, movement detection with smoothing, adjustable sensitivity, Green/Red Light game states with randomized timing, progress bar (fill only during Green Light when movement detected), immediate elimination on Red Light, survival timer, 3-2-1 countdown, procedural Web Audio API sounds, Squid Game aesthetic. Due to build failure, starting with core game UI/logic/sounds without MediaPipe first, then adding pose detection in a second step.",
+  "architectural_notes": [
+    "Building in two phases: (1) core game without MediaPipe, (2) add MediaPipe pose detection on top",
+    "Use @mediapipe/pose npm package (bundled, not CDN) for pose detection",
+    "requestAnimationFrame loop for detection cycle",
+    "Movement smoothing across recent frames to reduce false positives",
+    "Progress advances only during Green Light when movement is detected; no movement = no progress",
+    "Immediate elimination on Red Light if movement exceeds threshold — no grace period",
+    "Procedural sounds via Web Audio API only (no external audio files)"
+  ],
+  "known_issues": [
+    "Initial full build with MediaPipe failed — proceeding with phased approach"
+  ],
+  "isFixRequest": false,
+  "existing_features": [
+    {
+      "id": "feature-build-a-single-page-react-game-layout-with-a-squid-game-aesthetic-near-black-background-hot-pink-red-accents-ff0066-ff3333-stark-white-text-bold-cinematic-typography-and-a-full-viewport-dark-game-container",
+      "title": "Build a single-page React game layout with a Squid Game aesthetic: near-black background, hot pink / red accents (#FF0066 / #FF3333), stark white text, bold cinematic typography, and a full-viewport dark game container.",
+      "reqIds": [
+        "REQ-1"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-implement-game-state-machine-with-the-following-states-idle-countdown-3-2-1-green-light-red-light-eliminated-and-won-randomize-green-red-light-durations-2-6-seconds-each-with-occasional-dramatic-long-red-light-holds",
+      "title": "Implement game state machine with the following states: idle, countdown (3-2-1), green-light, red-light, eliminated, and won. Randomize green/red light durations (2–6 seconds each), with occasional dramatic long red-light holds.",
+      "reqIds": [
+        "REQ-2"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-create-a-movement-detection-stub-using-the-device-webcam-via-getusermedia-draw-the-raw-webcam-feed-onto-a-canvas-element-compare-pixel-motion-data-frame-to-frame-no-pose-landmarks-yet-to-produce-a-movement-score-apply-smoothing-by-averaging-movement-scores-across-the-last-5-10-frames-to-reduce-false-positives",
+      "title": "Create a movement detection stub using the device webcam via getUserMedia. Draw the raw webcam feed onto a canvas element. Compare pixel/motion data frame-to-frame (no pose landmarks yet) to produce a movement score. Apply smoothing by averaging movement scores across the last 5–10 frames to reduce false positives.",
+      "reqIds": [
+        "REQ-3"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-progress-bar-0-100-that-advances-only-during-green-light-when-movement-is-detected-movement-score-exceeds-threshold-no-progress-when-player-is-still-during-green-light-reaching-100-triggers-the-won-state",
+      "title": "Progress bar (0–100%) that advances only during Green Light when movement is detected (movement score exceeds threshold). No progress when player is still during Green Light. Reaching 100% triggers the won state.",
+      "reqIds": [
+        "REQ-4"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-immediate-elimination-if-movement-score-exceeds-the-threshold-during-red-light-instantly-transition-to-the-eliminated-state-no-grace-period",
+      "title": "Immediate elimination: if movement score exceeds the threshold during red-light, instantly transition to the eliminated state. No grace period.",
+      "reqIds": [
+        "REQ-5"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-adjustable-sensitivity-slider-that-controls-the-movement-detection-threshold-lower-value-more-forgiving-higher-value-more-strict",
+      "title": "Adjustable sensitivity slider that controls the movement detection threshold. Lower value = more forgiving; higher value = more strict.",
+      "reqIds": [
+        "REQ-6"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-survival-timer-displayed-as-a-score-timer-starts-when-the-game-begins-after-countdown-and-stops-on-elimination-or-win",
+      "title": "Survival timer displayed as a score. Timer starts when the game begins (after countdown) and stops on elimination or win.",
+      "reqIds": [
+        "REQ-7"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-procedural-sound-effects-using-the-web-audio-api-no-external-audio-files-a-tense-buzzer-alarm-when-red-light-activates-a-pleasant-chime-when-green-light-activates-an-elimination-sound-when-caught-moving-and-a-victory-fanfare-on-win",
+      "title": "Procedural sound effects using the Web Audio API (no external audio files): a tense buzzer/alarm when Red Light activates, a pleasant chime when Green Light activates, an elimination sound when caught moving, and a victory fanfare on win.",
+      "reqIds": [
+        "REQ-8"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-display-large-status-text-during-gameplay-green-light-in-bright-green-and-red-light-in-bright-red-pink-show-idle-countdown-digits-eliminated-and-won-screens-with-appropriate-messaging-and-start-restart-buttons",
+      "title": "Display large status text during gameplay: 'GREEN LIGHT' in bright green and 'RED LIGHT' in bright red/pink. Show idle, countdown digits, eliminated, and won screens with appropriate messaging and Start/Restart buttons.",
+      "reqIds": [
+        "REQ-9"
+      ],
+      "version": 1
+    }
+  ],
+  "new_feature_requests": [
+    {
+      "id": "AR-1",
+      "summary": "Core game without MediaPipe: game states, movement detection stub, procedural sounds, Squid Game aesthetic, progress bar, countdown, survival timer",
+      "reqIds": [],
+      "status": "pending"
+    },
+    {
+      "id": "AR-2",
+      "summary": "Add @mediapipe/pose npm package integration with webcam feed, real-time skeleton overlay, and frame-to-frame landmark movement detection",
+      "reqIds": [],
+      "status": "pending"
+    }
+  ],
+  "gameProjectType": "2d",
+  "projectName": "Squid Game: Red Light, Green Light",
+  "clarification_mode": "instant",
+  "clarification_rounds": 0
+}

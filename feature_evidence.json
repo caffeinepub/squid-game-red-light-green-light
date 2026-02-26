@@ -1,0 +1,186 @@
+{
+  "kind": "feature_evidence_report",
+  "features": [
+    {
+      "featureId": "feature-build-a-single-page-react-game-layout-with-a-squid-game-aesthetic-near-black-background-hot-pink-red-accents-ff0066-ff3333-stark-white-text-bold-cinematic-typography-and-a-full-viewport-dark-game-container",
+      "featureTitle": "Build a single-page React game layout with a Squid Game aesthetic: near-black background, hot pink / red accents (#FF0066 / #FF3333), stark white text, bold cinematic typography, and a full-viewport dark game container.",
+      "files": [
+        "frontend/src/App.tsx",
+        "frontend/src/index.css",
+        "frontend/tailwind.config.js"
+      ],
+      "components": [
+        "core-infrastructure@1.0.2",
+        "shadcn-ui@1.0.0",
+        "build-template-react@1.0.0",
+        "initial-app@1.0.0",
+        "github-export-icp-cli@1.0.0"
+      ],
+      "testIds": [
+        "REQ-1"
+      ],
+      "confidence": "high"
+    },
+    {
+      "featureId": "feature-implement-game-state-machine-with-the-following-states-idle-countdown-3-2-1-green-light-red-light-eliminated-and-won-randomize-green-red-light-durations-2-6-seconds-each-with-occasional-dramatic-long-red-light-holds",
+      "featureTitle": "Implement game state machine with the following states: idle, countdown (3-2-1), green-light, red-light, eliminated, and won. Randomize green/red light durations (2–6 seconds each), with occasional dramatic long red-light holds.",
+      "files": [
+        "frontend/src/App.tsx",
+        "frontend/src/hooks/useGameState.ts"
+      ],
+      "components": [
+        "core-infrastructure@1.0.2",
+        "shadcn-ui@1.0.0",
+        "build-template-react@1.0.0",
+        "initial-app@1.0.0",
+        "github-export-icp-cli@1.0.0"
+      ],
+      "testIds": [
+        "REQ-2"
+      ],
+      "confidence": "high"
+    },
+    {
+      "featureId": "feature-create-a-movement-detection-stub-using-the-device-webcam-via-getusermedia-draw-the-raw-webcam-feed-onto-a-canvas-element-compare-pixel-motion-data-frame-to-frame-no-pose-landmarks-yet-to-produce-a-movement-score-apply-smoothing-by-averaging-movement-scores-across-the-last-5-10-frames-to-reduce-false-positives",
+      "featureTitle": "Create a movement detection stub using the device webcam via getUserMedia. Draw the raw webcam feed onto a canvas element. Compare pixel/motion data frame-to-frame (no pose landmarks yet) to produce a movement score. Apply smoothing by averaging movement scores across the last 5–10 frames to reduce false positives.",
+      "files": [
+        "frontend/src/App.tsx",
+        "frontend/src/components/GameCanvas.tsx",
+        "frontend/src/hooks/useMovementDetection.ts",
+        "frontend/src/hooks/useWebcam.ts"
+      ],
+      "components": [
+        "core-infrastructure@1.0.2",
+        "shadcn-ui@1.0.0",
+        "build-template-react@1.0.0",
+        "initial-app@1.0.0",
+        "github-export-icp-cli@1.0.0"
+      ],
+      "testIds": [
+        "REQ-3"
+      ],
+      "confidence": "high"
+    },
+    {
+      "featureId": "feature-progress-bar-0-100-that-advances-only-during-green-light-when-movement-is-detected-movement-score-exceeds-threshold-no-progress-when-player-is-still-during-green-light-reaching-100-triggers-the-won-state",
+      "featureTitle": "Progress bar (0–100%) that advances only during Green Light when movement is detected (movement score exceeds threshold). No progress when player is still during Green Light. Reaching 100% triggers the won state.",
+      "files": [
+        "frontend/src/App.tsx",
+        "frontend/src/components/ProgressBar.tsx",
+        "frontend/src/hooks/useGameState.ts"
+      ],
+      "components": [
+        "core-infrastructure@1.0.2",
+        "shadcn-ui@1.0.0",
+        "build-template-react@1.0.0",
+        "initial-app@1.0.0",
+        "github-export-icp-cli@1.0.0"
+      ],
+      "testIds": [
+        "REQ-4"
+      ],
+      "confidence": "high"
+    },
+    {
+      "featureId": "feature-immediate-elimination-if-movement-score-exceeds-the-threshold-during-red-light-instantly-transition-to-the-eliminated-state-no-grace-period",
+      "featureTitle": "Immediate elimination: if movement score exceeds the threshold during red-light, instantly transition to the eliminated state. No grace period.",
+      "files": [
+        "frontend/src/App.tsx",
+        "frontend/src/components/EliminatedScreen.tsx",
+        "frontend/src/hooks/useGameState.ts"
+      ],
+      "components": [
+        "core-infrastructure@1.0.2",
+        "shadcn-ui@1.0.0",
+        "build-template-react@1.0.0",
+        "initial-app@1.0.0",
+        "github-export-icp-cli@1.0.0"
+      ],
+      "testIds": [
+        "REQ-5"
+      ],
+      "confidence": "high"
+    },
+    {
+      "featureId": "feature-adjustable-sensitivity-slider-that-controls-the-movement-detection-threshold-lower-value-more-forgiving-higher-value-more-strict",
+      "featureTitle": "Adjustable sensitivity slider that controls the movement detection threshold. Lower value = more forgiving; higher value = more strict.",
+      "files": [
+        "frontend/src/App.tsx",
+        "frontend/src/components/SensitivitySlider.tsx"
+      ],
+      "components": [
+        "core-infrastructure@1.0.2",
+        "shadcn-ui@1.0.0",
+        "build-template-react@1.0.0",
+        "initial-app@1.0.0",
+        "github-export-icp-cli@1.0.0"
+      ],
+      "testIds": [
+        "REQ-6"
+      ],
+      "confidence": "high"
+    },
+    {
+      "featureId": "feature-survival-timer-displayed-as-a-score-timer-starts-when-the-game-begins-after-countdown-and-stops-on-elimination-or-win",
+      "featureTitle": "Survival timer displayed as a score. Timer starts when the game begins (after countdown) and stops on elimination or win.",
+      "files": [
+        "frontend/src/App.tsx",
+        "frontend/src/components/EliminatedScreen.tsx",
+        "frontend/src/components/Timer.tsx",
+        "frontend/src/components/WonScreen.tsx",
+        "frontend/src/hooks/useGameState.ts"
+      ],
+      "components": [
+        "core-infrastructure@1.0.2",
+        "shadcn-ui@1.0.0",
+        "build-template-react@1.0.0",
+        "initial-app@1.0.0",
+        "github-export-icp-cli@1.0.0"
+      ],
+      "testIds": [
+        "REQ-7"
+      ],
+      "confidence": "high"
+    },
+    {
+      "featureId": "feature-procedural-sound-effects-using-the-web-audio-api-no-external-audio-files-a-tense-buzzer-alarm-when-red-light-activates-a-pleasant-chime-when-green-light-activates-an-elimination-sound-when-caught-moving-and-a-victory-fanfare-on-win",
+      "featureTitle": "Procedural sound effects using the Web Audio API (no external audio files): a tense buzzer/alarm when Red Light activates, a pleasant chime when Green Light activates, an elimination sound when caught moving, and a victory fanfare on win.",
+      "files": [
+        "frontend/src/hooks/useGameState.ts",
+        "frontend/src/utils/audioEffects.ts"
+      ],
+      "components": [
+        "core-infrastructure@1.0.2",
+        "shadcn-ui@1.0.0",
+        "build-template-react@1.0.0",
+        "initial-app@1.0.0",
+        "github-export-icp-cli@1.0.0"
+      ],
+      "testIds": [
+        "REQ-8"
+      ],
+      "confidence": "high"
+    },
+    {
+      "featureId": "feature-display-large-status-text-during-gameplay-green-light-in-bright-green-and-red-light-in-bright-red-pink-show-idle-countdown-digits-eliminated-and-won-screens-with-appropriate-messaging-and-start-restart-buttons",
+      "featureTitle": "Display large status text during gameplay: 'GREEN LIGHT' in bright green and 'RED LIGHT' in bright red/pink. Show idle, countdown digits, eliminated, and won screens with appropriate messaging and Start/Restart buttons.",
+      "files": [
+        "frontend/src/App.tsx",
+        "frontend/src/components/CountdownDisplay.tsx",
+        "frontend/src/components/IdleScreen.tsx",
+        "frontend/src/components/StatusText.tsx"
+      ],
+      "components": [
+        "core-infrastructure@1.0.2",
+        "shadcn-ui@1.0.0",
+        "build-template-react@1.0.0",
+        "initial-app@1.0.0",
+        "github-export-icp-cli@1.0.0"
+      ],
+      "testIds": [
+        "REQ-9"
+      ],
+      "confidence": "high"
+    }
+  ]
+}

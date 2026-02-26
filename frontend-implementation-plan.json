@@ -1,0 +1,263 @@
+{
+  "kind": "implementation_plan",
+  "version": "1.0",
+  "title": "Squid Game Red Light Green Light — Core Game (No MediaPipe)",
+  "requirements": [
+    {
+      "id": "REQ-1",
+      "summary": "Build a single-page React game layout with Squid Game aesthetic: near-black background, hot pink/red accents, stark white text, bold cinematic typography, and full-viewport dark game container.",
+      "acceptanceCriteria": [
+        "Page background is near-black (#0a0a0a or similar).",
+        "Primary accent color is hot pink/red (#FF0066).",
+        "Typography feels bold and cinematic.",
+        "Layout fills the full viewport."
+      ],
+      "file_operations": [
+        {
+          "path": "frontend/src/index.css",
+          "operation": "modify",
+          "description": "Update global styles to apply near-black background (#0a0a0a), hot pink/red accent colors (#FF0066, #FF3333), stark white text, and bold cinematic typography. Ensure body and html fill the full viewport with no margins or overflow."
+        },
+        {
+          "path": "frontend/tailwind.config.js",
+          "operation": "modify",
+          "description": "Extend Tailwind theme to include custom Squid Game palette: near-black background, hot pink/red accents (#FF0066, #FF3333), bright green (#00FF88), and stark white. Add bold cinematic font weights."
+        },
+        {
+          "path": "frontend/src/App.tsx",
+          "operation": "modify",
+          "description": "Transform App.tsx into the main game container with full-viewport dark layout. Remove any existing default content and replace with a game canvas area styled with Squid Game aesthetic (dark background, hot pink/red borders or accents)."
+        }
+      ]
+    },
+    {
+      "id": "REQ-2",
+      "summary": "Implement game state machine with states: idle, countdown (3-2-1), green-light, red-light, eliminated, and won. Randomize green/red light durations (2–6 seconds each), with occasional dramatic long red-light holds.",
+      "acceptanceCriteria": [
+        "Game starts in idle state with a Start button.",
+        "Pressing Start triggers a 3-2-1 countdown before entering green-light.",
+        "Green Light and Red Light states alternate with randomized durations between 2–6 seconds.",
+        "Occasionally, a red-light hold lasts noticeably longer (dramatic pause).",
+        "Game transitions to eliminated or won states correctly."
+      ],
+      "file_operations": [
+        {
+          "path": "frontend/src/hooks/useGameState.ts",
+          "operation": "create",
+          "description": "Create a custom React hook to manage game state machine with states: idle, countdown, green-light, red-light, eliminated, won. Implement logic to randomize green/red light durations (2–6 seconds), with occasional dramatic long red-light holds (e.g., 8–12 seconds). Expose state transitions, current state, and timer management."
+        },
+        {
+          "path": "frontend/src/App.tsx",
+          "operation": "modify",
+          "description": "Integrate useGameState hook into App.tsx. Wire up Start button to trigger countdown. Display countdown digits (3, 2, 1) during countdown state. Conditionally render game UI based on current state (idle, active gameplay, eliminated, won)."
+        }
+      ]
+    },
+    {
+      "id": "REQ-3",
+      "summary": "Create movement detection stub using device webcam via getUserMedia. Draw raw webcam feed onto canvas. Compare pixel/motion data frame-to-frame to produce a movement score. Apply smoothing by averaging movement scores across the last 5–10 frames.",
+      "acceptanceCriteria": [
+        "Webcam feed is displayed inside the game canvas.",
+        "A requestAnimationFrame loop drives frame-to-frame comparison.",
+        "Movement score is smoothed across recent frames.",
+        "Movement score is exposed to the game state logic."
+      ],
+      "file_operations": [
+        {
+          "path": "frontend/src/hooks/useWebcam.ts",
+          "operation": "create",
+          "description": "Create a custom React hook to request webcam access via getUserMedia. Return the video stream and status (loading, ready, error)."
+        },
+        {
+          "path": "frontend/src/hooks/useMovementDetection.ts",
+          "operation": "create",
+          "description": "Create a custom React hook that accepts a video stream and sensitivity threshold. Use a canvas element to draw frames from the webcam. Implement a requestAnimationFrame loop to compare pixel data frame-to-frame and calculate a raw movement score. Apply smoothing by averaging the last 5–10 movement scores. Expose the smoothed movement score."
+        },
+        {
+          "path": "frontend/src/components/GameCanvas.tsx",
+          "operation": "create",
+          "description": "Create a GameCanvas component that renders a canvas element displaying the webcam feed. Use useWebcam and useMovementDetection hooks. Position the canvas to fill the game container area while maintaining aspect ratio. Pass the smoothed movement score up to parent components."
+        },
+        {
+          "path": "frontend/src/App.tsx",
+          "operation": "modify",
+          "description": "Integrate GameCanvas component into App.tsx. Pass movement score from GameCanvas to useGameState hook logic to drive progress and elimination checks."
+        }
+      ]
+    },
+    {
+      "id": "REQ-4",
+      "summary": "Progress bar (0–100%) that advances only during Green Light when movement is detected (movement score exceeds threshold). No progress when player is still during Green Light. Reaching 100% triggers the won state.",
+      "acceptanceCriteria": [
+        "Progress bar is visible at all times during play.",
+        "Progress only increases during green-light when movement score > threshold.",
+        "Progress does not increase when player is still during green-light.",
+        "Reaching 100% ends the game with a won state."
+      ],
+      "file_operations": [
+        {
+          "path": "frontend/src/components/ProgressBar.tsx",
+          "operation": "create",
+          "description": "Create a ProgressBar component that displays a horizontal bar (0–100%). Style it with Squid Game aesthetic (hot pink/red fill, white border). Accept progress percentage as a prop."
+        },
+        {
+          "path": "frontend/src/hooks/useGameState.ts",
+          "operation": "modify",
+          "description": "Add progress tracking state (0–100%). During green-light state, increment progress only when movement score exceeds the threshold. Do not increment progress when player is still. When progress reaches 100%, transition to won state."
+        },
+        {
+          "path": "frontend/src/App.tsx",
+          "operation": "modify",
+          "description": "Render ProgressBar component in the game UI. Pass current progress percentage from useGameState. Position the progress bar prominently within the game container."
+        }
+      ]
+    },
+    {
+      "id": "REQ-5",
+      "summary": "Immediate elimination: if movement score exceeds the threshold during red-light, instantly transition to the eliminated state. No grace period.",
+      "acceptanceCriteria": [
+        "Any movement above threshold during red-light immediately triggers eliminated state.",
+        "No delay or grace period before elimination.",
+        "Eliminated screen shows progress percentage and survival time."
+      ],
+      "file_operations": [
+        {
+          "path": "frontend/src/hooks/useGameState.ts",
+          "operation": "modify",
+          "description": "Add elimination logic: during red-light state, if movement score exceeds threshold, immediately transition to eliminated state with no grace period. Store final progress percentage and survival time for display."
+        },
+        {
+          "path": "frontend/src/components/EliminatedScreen.tsx",
+          "operation": "create",
+          "description": "Create an EliminatedScreen component that displays elimination message, final progress percentage, and survival time. Include a Restart button. Style with Squid Game aesthetic (red/pink accents, stark white text)."
+        },
+        {
+          "path": "frontend/src/App.tsx",
+          "operation": "modify",
+          "description": "Conditionally render EliminatedScreen when game state is eliminated. Wire Restart button to reset the game state to idle."
+        }
+      ]
+    },
+    {
+      "id": "REQ-6",
+      "summary": "Adjustable sensitivity slider that controls the movement detection threshold. Lower value = more forgiving; higher value = more strict.",
+      "acceptanceCriteria": [
+        "A labeled slider is visible in the UI.",
+        "Adjusting the slider changes the movement threshold in real time.",
+        "Slider range covers a sensible min/max (e.g., 1–100)."
+      ],
+      "file_operations": [
+        {
+          "path": "frontend/src/components/SensitivitySlider.tsx",
+          "operation": "create",
+          "description": "Create a SensitivitySlider component that renders a labeled slider input. Set min/max range (e.g., 1–100). Style with Squid Game aesthetic. Accept onChange callback to update threshold in parent state."
+        },
+        {
+          "path": "frontend/src/App.tsx",
+          "operation": "modify",
+          "description": "Add sensitivity threshold state to App.tsx. Render SensitivitySlider component and pass threshold state and setter. Pass current threshold value to useMovementDetection hook so detection logic uses the adjustable threshold."
+        }
+      ]
+    },
+    {
+      "id": "REQ-7",
+      "summary": "Survival timer displayed as a score. Timer starts when the game begins (after countdown) and stops on elimination or win.",
+      "acceptanceCriteria": [
+        "Timer is shown on screen during active gameplay.",
+        "Timer starts after the 3-2-1 countdown.",
+        "Timer stops when the player is eliminated or wins.",
+        "Final time is shown on elimination and win screens."
+      ],
+      "file_operations": [
+        {
+          "path": "frontend/src/hooks/useGameState.ts",
+          "operation": "modify",
+          "description": "Add survival timer state. Start the timer after countdown completes (entering green-light state). Stop the timer when game transitions to eliminated or won state. Store final survival time for display."
+        },
+        {
+          "path": "frontend/src/components/Timer.tsx",
+          "operation": "create",
+          "description": "Create a Timer component that displays elapsed survival time in seconds (e.g., '12.3s'). Style with Squid Game aesthetic (stark white text, bold font). Accept time value as a prop."
+        },
+        {
+          "path": "frontend/src/App.tsx",
+          "operation": "modify",
+          "description": "Render Timer component in the game UI during active gameplay. Pass current survival time from useGameState."
+        },
+        {
+          "path": "frontend/src/components/EliminatedScreen.tsx",
+          "operation": "modify",
+          "description": "Display final survival time in the EliminatedScreen component."
+        },
+        {
+          "path": "frontend/src/components/WonScreen.tsx",
+          "operation": "create",
+          "description": "Create a WonScreen component that displays a victory message and final survival time. Include a Restart button. Style with Squid Game aesthetic (bright green accents for victory, stark white text)."
+        },
+        {
+          "path": "frontend/src/App.tsx",
+          "operation": "modify",
+          "description": "Conditionally render WonScreen when game state is won. Wire Restart button to reset the game state to idle."
+        }
+      ]
+    },
+    {
+      "id": "REQ-8",
+      "summary": "Procedural sound effects using the Web Audio API (no external audio files): a tense buzzer/alarm when Red Light activates, a pleasant chime when Green Light activates, an elimination sound when caught moving, and a victory fanfare on win.",
+      "acceptanceCriteria": [
+        "All sounds are generated programmatically via Web Audio API.",
+        "No external audio files are loaded.",
+        "Red Light trigger plays a tense buzzer/alarm sound.",
+        "Green Light trigger plays a chime/go sound.",
+        "Elimination plays a distinct elimination sound.",
+        "Winning plays a victory fanfare."
+      ],
+      "file_operations": [
+        {
+          "path": "frontend/src/utils/audioEffects.ts",
+          "operation": "create",
+          "description": "Create utility functions using Web Audio API to generate procedural sounds: playRedLightSound (tense buzzer/alarm), playGreenLightSound (pleasant chime), playEliminationSound (harsh/dramatic sound), playVictorySound (fanfare). All sounds must be synthesized programmatically with no external audio files."
+        },
+        {
+          "path": "frontend/src/hooks/useGameState.ts",
+          "operation": "modify",
+          "description": "Import audio utility functions. Trigger playRedLightSound when transitioning to red-light state, playGreenLightSound when transitioning to green-light state, playEliminationSound when transitioning to eliminated state, and playVictorySound when transitioning to won state."
+        }
+      ]
+    },
+    {
+      "id": "REQ-9",
+      "summary": "Display large status text during gameplay: 'GREEN LIGHT' in bright green and 'RED LIGHT' in bright red/pink. Show idle, countdown digits, eliminated, and won screens with appropriate messaging and Start/Restart buttons.",
+      "acceptanceCriteria": [
+        "'GREEN LIGHT' text is displayed in bright green (#00FF88 or similar) during green-light state.",
+        "'RED LIGHT' text is displayed in bright red/pink (#FF0066 or similar) during red-light state.",
+        "Countdown shows large digits (3, 2, 1).",
+        "Eliminated screen shows progress % and survival time with a Restart button.",
+        "Won screen shows a victory message and survival time with a Restart button.",
+        "Idle screen shows a Start button."
+      ],
+      "file_operations": [
+        {
+          "path": "frontend/src/components/StatusText.tsx",
+          "operation": "create",
+          "description": "Create a StatusText component that displays large, bold text overlaying the game canvas. Accept text content and color as props. Style 'GREEN LIGHT' in bright green (#00FF88) and 'RED LIGHT' in bright red/pink (#FF0066). Use cinematic typography."
+        },
+        {
+          "path": "frontend/src/components/CountdownDisplay.tsx",
+          "operation": "create",
+          "description": "Create a CountdownDisplay component that shows large countdown digits (3, 2, 1) in stark white text with bold, cinematic styling. Accept countdown value as a prop."
+        },
+        {
+          "path": "frontend/src/components/IdleScreen.tsx",
+          "operation": "create",
+          "description": "Create an IdleScreen component that displays a welcome message and a Start button. Style with Squid Game aesthetic (near-black background, hot pink/red button, stark white text)."
+        },
+        {
+          "path": "frontend/src/App.tsx",
+          "operation": "modify",
+          "description": "Conditionally render IdleScreen when game state is idle. Conditionally render CountdownDisplay during countdown state. Conditionally render StatusText with 'GREEN LIGHT' or 'RED LIGHT' during active gameplay states. Ensure all screens and status overlays are positioned correctly within the full-viewport game container."
+        }
+      ]
+    }
+  ]
+}
