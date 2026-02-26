@@ -1,71 +1,49 @@
-import React from 'react';
-
 interface ProgressBarProps {
-  progress: number; // 0–100
+  progress: number;
   phase: string;
 }
 
-const ProgressBar: React.FC<ProgressBarProps> = ({ progress, phase }) => {
-  const isGreen = phase === 'green-light';
-  const isRed = phase === 'red-light';
+export function ProgressBar({ progress, phase }: ProgressBarProps) {
+  const barColor =
+    phase === 'green-light' ? '#00ff88' :
+    phase === 'red-light' ? '#ff2d78' :
+    phase === 'won' ? '#00ff88' :
+    '#ff2d78';
 
-  const barColor = isGreen
-    ? 'bg-game-green'
-    : isRed
-    ? 'bg-game-red'
-    : 'bg-game-pink';
-
-  const glowClass = isGreen
-    ? 'shadow-[0_0_12px_rgba(0,255,136,0.6)]'
-    : isRed
-    ? 'shadow-[0_0_12px_rgba(255,51,51,0.6)]'
-    : 'shadow-[0_0_12px_rgba(255,0,102,0.4)]';
+  const glowColor =
+    phase === 'green-light' ? 'rgba(0,255,136,0.6)' :
+    phase === 'red-light' ? 'rgba(255,45,120,0.6)' :
+    phase === 'won' ? 'rgba(0,255,136,0.6)' :
+    'rgba(255,45,120,0.3)';
 
   return (
     <div className="w-full">
-      <div className="flex items-center justify-between mb-1.5">
-        <span className="font-bebas text-sm tracking-widest text-game-dim">PROGRESS</span>
-        <span className="font-bebas text-sm tracking-widest text-game-white">
-          {Math.floor(progress)}%
-        </span>
+      <div className="flex justify-between items-center mb-1">
+        <span className="text-white/60 font-mono text-xs tracking-widest">PROGRESS</span>
+        <span className="text-white font-mono text-xs">{Math.round(progress)}%</span>
       </div>
-      <div className="relative h-4 bg-game-border rounded-none overflow-hidden border border-game-border">
-        {/* Background grid lines */}
-        <div className="absolute inset-0 flex">
-          {Array.from({ length: 10 }).map((_, i) => (
-            <div
-              key={i}
-              className="flex-1 border-r border-white/5 last:border-r-0"
-            />
-          ))}
-        </div>
+      <div className="h-3 bg-white/10 rounded-full overflow-hidden relative">
+        {/* Milestone markers */}
+        {[25, 50, 75].map((m) => (
+          <div
+            key={m}
+            className="absolute top-0 bottom-0 w-px bg-white/20"
+            style={{ left: `${m}%` }}
+          />
+        ))}
         {/* Progress fill */}
         <div
-          className={`absolute left-0 top-0 h-full transition-all duration-100 ${barColor} ${glowClass}`}
-          style={{ width: `${progress}%` }}
-        />
-        {/* Shine effect */}
-        <div
-          className="absolute left-0 top-0 h-1/2 bg-white/10"
-          style={{ width: `${progress}%`, transition: 'width 100ms' }}
-        />
-      </div>
-      {/* Milestone markers */}
-      <div className="flex justify-between mt-1">
-        {[25, 50, 75, 100].map((mark) => (
-          <div
-            key={mark}
-            className={`font-bebas text-xs tracking-wider transition-colors duration-300 ${
-              progress >= mark ? 'text-game-white' : 'text-game-dim/40'
-            }`}
-            style={{ marginLeft: mark === 25 ? '21%' : undefined }}
-          >
-            {mark === 100 ? '🏁' : `${mark}`}
-          </div>
-        ))}
+          className="h-full rounded-full transition-all duration-200 relative overflow-hidden"
+          style={{
+            width: `${progress}%`,
+            background: barColor,
+            boxShadow: `0 0 8px ${glowColor}`,
+          }}
+        >
+          {/* Shine */}
+          <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent" />
+        </div>
       </div>
     </div>
   );
-};
-
-export default ProgressBar;
+}

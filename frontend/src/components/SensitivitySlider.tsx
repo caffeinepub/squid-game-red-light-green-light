@@ -1,52 +1,46 @@
-import React from 'react';
-
 interface SensitivitySliderProps {
   value: number;
   onChange: (value: number) => void;
-  disabled?: boolean;
 }
 
-const SensitivitySlider: React.FC<SensitivitySliderProps> = ({ value, onChange, disabled }) => {
-  const label =
-    value <= 25 ? 'FORGIVING' : value <= 50 ? 'NORMAL' : value <= 75 ? 'STRICT' : 'BRUTAL';
+function getSensitivityLabel(value: number): string {
+  if (value <= 25) return 'FORGIVING';
+  if (value <= 50) return 'NORMAL';
+  if (value <= 75) return 'STRICT';
+  return 'BRUTAL';
+}
 
-  const labelColor =
-    value <= 25
-      ? 'text-game-green'
-      : value <= 50
-      ? 'text-game-white'
-      : value <= 75
-      ? 'text-yellow-400'
-      : 'text-game-red';
+function getSensitivityColor(value: number): string {
+  if (value <= 25) return '#00ff88';
+  if (value <= 50) return '#f5c842';
+  if (value <= 75) return '#ff8c00';
+  return '#ff2d78';
+}
+
+export function SensitivitySlider({ value, onChange }: SensitivitySliderProps) {
+  const label = getSensitivityLabel(value);
+  const color = getSensitivityColor(value);
 
   return (
     <div className="w-full">
-      <div className="flex items-center justify-between mb-2">
-        <span className="font-bebas text-sm tracking-widest text-game-dim">SENSITIVITY</span>
-        <span className={`font-bebas text-sm tracking-widest ${labelColor}`}>{label}</span>
+      <div className="flex justify-between items-center mb-1">
+        <span className="text-white/60 font-mono text-xs tracking-widest">SENSITIVITY</span>
+        <span className="font-mono text-xs font-bold" style={{ color }}>
+          {label}
+        </span>
       </div>
-      <div className="relative">
-        <input
-          type="range"
-          min={1}
-          max={100}
-          value={value}
-          onChange={(e) => onChange(Number(e.target.value))}
-          disabled={disabled}
-          className="w-full h-2 appearance-none cursor-pointer disabled:cursor-not-allowed"
-          style={{
-            background: `linear-gradient(to right, #FF0066 0%, #FF0066 ${value}%, #2a2a2a ${value}%, #2a2a2a 100%)`,
-            borderRadius: '0',
-            outline: 'none',
-          }}
-        />
-      </div>
-      <div className="flex justify-between mt-1">
-        <span className="font-bebas text-xs text-game-green tracking-wider">LOW</span>
-        <span className="font-bebas text-xs text-game-red tracking-wider">HIGH</span>
-      </div>
+      <input
+        type="range"
+        min={1}
+        max={100}
+        value={value}
+        onChange={(e) => onChange(Number(e.target.value))}
+        className="w-full h-2 rounded-full appearance-none cursor-pointer"
+        style={{
+          background: `linear-gradient(to right, ${color} 0%, ${color} ${value}%, rgba(255,255,255,0.1) ${value}%, rgba(255,255,255,0.1) 100%)`,
+          accentColor: color,
+        }}
+      />
     </div>
   );
-};
-
-export default SensitivitySlider;
+}

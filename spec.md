@@ -1,17 +1,11 @@
 # Specification
 
 ## Summary
-**Goal:** Build a single-page, client-side Squid Game "Red Light Green Light" game with webcam-based motion detection, Squid Game visual aesthetic, procedural audio, and full game state management.
+**Goal:** Strengthen the dead zone mechanic in the Squid Game: Red Light Green Light app so that small movements (below 10% of the threshold) never cause player elimination.
 
 **Planned changes:**
-- Create a full-viewport React game page with Squid Game aesthetic: near-black background, hot pink/red accents (#FF0066/#FF3333), bold cinematic white typography
-- Implement a game state machine: idle → countdown (3-2-1) → green-light ↔ red-light → eliminated/won, with randomized 2–6s durations and occasional dramatic long red-light holds
-- Access the device webcam via `getUserMedia`, draw the feed onto a canvas, and perform frame-to-frame pixel comparison in a `requestAnimationFrame` loop to produce a smoothed movement score (averaged over last 5–10 frames)
-- Progress bar (0–100%) that advances only during green-light when movement score exceeds the threshold; reaching 100% triggers the won state
-- Immediate elimination (no grace period) if movement score exceeds threshold during red-light; eliminated screen shows progress % and survival time
-- Adjustable sensitivity slider (range 1–100) that controls the movement detection threshold in real time
-- Survival timer that starts after countdown and stops on elimination or win; final time shown on result screens
-- Procedural sound effects via Web Audio API (no external files): buzzer on red-light, chime on green-light, elimination sound, victory fanfare
-- Large status text: "GREEN LIGHT" in bright green (#00FF88), "RED LIGHT" in bright red/pink (#FF0066); countdown digits; idle/eliminated/won screens with Start/Restart buttons
+- In `movementDetection.ts`, clamp any smoothed movement score strictly below `threshold × 0.10` to zero before returning it to callers.
+- In `gameState.ts`, add an explicit guard that blocks the elimination transition unless the movement score is strictly greater than `threshold × 0.10`, acting as a second line of defence.
+- In `useGameState.ts`, ensure all movement score consumption for elimination and progress decisions uses the post-clamp value from `movementDetection.ts`, removing any intermediate raw-landmark re-evaluation that bypasses the dead zone.
 
-**User-visible outcome:** The user can play a browser-based Red Light Green Light game using their webcam — moving during green light advances their progress, while any movement during red light results in instant elimination. The game features Squid Game visuals, procedural sounds, a sensitivity slider, and a survival timer.
+**User-visible outcome:** Players will no longer be eliminated for very small or incidental movements; only motion exceeding 10% of the sensitivity threshold will register as meaningful movement during Red Light.

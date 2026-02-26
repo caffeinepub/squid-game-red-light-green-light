@@ -1,59 +1,68 @@
+@import url('https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Share+Tech+Mono&display=swap');
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
-@import url('https://fonts.googleapis.com/css2?family=Black+Han+Sans&family=Bebas+Neue&family=Inter:wght@400;600;700;900&display=swap');
-
 @layer base {
   :root {
-    --radius: 0.25rem;
-    --background: 0.08 0 0;
-    --foreground: 0.98 0 0;
-    --card: 0.12 0 0;
-    --card-foreground: 0.98 0 0;
-    --popover: 0.12 0 0;
-    --popover-foreground: 0.98 0 0;
-    --primary: 0.55 0.22 0;
-    --primary-foreground: 0.98 0 0;
-    --secondary: 0.18 0 0;
-    --secondary-foreground: 0.98 0 0;
-    --muted: 0.18 0 0;
-    --muted-foreground: 0.55 0 0;
-    --accent: 0.55 0.22 0;
-    --accent-foreground: 0.98 0 0;
-    --destructive: 0.55 0.22 27;
-    --destructive-foreground: 0.98 0 0;
-    --border: 0.22 0 0;
-    --input: 0.22 0 0;
-    --ring: 0.55 0.22 0;
-    --chart-1: 0.55 0.22 0;
-    --chart-2: 0.65 0.18 160;
-    --chart-3: 0.45 0.15 240;
-    --chart-4: 0.75 0.18 80;
-    --chart-5: 0.65 0.22 30;
-    --sidebar: 0.12 0 0;
-    --sidebar-foreground: 0.98 0 0;
-    --sidebar-primary: 0.55 0.22 0;
-    --sidebar-primary-foreground: 0.98 0 0;
-    --sidebar-accent: 0.18 0 0;
-    --sidebar-accent-foreground: 0.98 0 0;
-    --sidebar-border: 0.22 0 0;
-    --sidebar-ring: 0.55 0.22 0;
+    --background: oklch(0.08 0.02 260);
+    --foreground: oklch(0.95 0.01 260);
+    --card: oklch(0.12 0.02 260);
+    --card-foreground: oklch(0.95 0.01 260);
+    --popover: oklch(0.10 0.02 260);
+    --popover-foreground: oklch(0.95 0.01 260);
+    --primary: oklch(0.60 0.28 350);
+    --primary-foreground: oklch(0.08 0.02 260);
+    --secondary: oklch(0.18 0.03 260);
+    --secondary-foreground: oklch(0.90 0.01 260);
+    --muted: oklch(0.15 0.02 260);
+    --muted-foreground: oklch(0.55 0.02 260);
+    --accent: oklch(0.75 0.25 145);
+    --accent-foreground: oklch(0.08 0.02 260);
+    --destructive: oklch(0.55 0.28 25);
+    --destructive-foreground: oklch(0.95 0.01 260);
+    --border: oklch(0.22 0.03 260);
+    --input: oklch(0.18 0.02 260);
+    --ring: oklch(0.60 0.28 350);
+    --radius: 0.5rem;
 
     /* Game-specific tokens */
-    --game-bg: #0a0a0a;
-    --game-pink: #FF0066;
-    --game-red: #FF3333;
-    --game-green: #00FF88;
-    --game-white: #F5F5F5;
-    --game-dim: #888888;
-    --game-card: #141414;
-    --game-border: #2a2a2a;
+    --game-bg: oklch(0.08 0.02 260);
+    --game-pink: oklch(0.60 0.28 350);
+    --game-red: oklch(0.50 0.25 25);
+    --game-green: oklch(0.75 0.25 145);
+    --game-white: oklch(0.95 0.01 260);
+    --game-dim: oklch(0.35 0.02 260);
+    --game-gold: oklch(0.82 0.18 85);
   }
 
+  .dark {
+    --background: oklch(0.08 0.02 260);
+    --foreground: oklch(0.95 0.01 260);
+    --card: oklch(0.12 0.02 260);
+    --card-foreground: oklch(0.95 0.01 260);
+    --popover: oklch(0.10 0.02 260);
+    --popover-foreground: oklch(0.95 0.01 260);
+    --primary: oklch(0.60 0.28 350);
+    --primary-foreground: oklch(0.08 0.02 260);
+    --secondary: oklch(0.18 0.03 260);
+    --secondary-foreground: oklch(0.90 0.01 260);
+    --muted: oklch(0.15 0.02 260);
+    --muted-foreground: oklch(0.55 0.02 260);
+    --accent: oklch(0.75 0.25 145);
+    --accent-foreground: oklch(0.08 0.02 260);
+    --destructive: oklch(0.55 0.28 25);
+    --destructive-foreground: oklch(0.95 0.01 260);
+    --border: oklch(0.22 0.03 260);
+    --input: oklch(0.18 0.02 260);
+    --ring: oklch(0.60 0.28 350);
+  }
+}
+
+@layer base {
   * {
     @apply border-border;
-    box-sizing: border-box;
   }
 
   html, body, #root {
@@ -62,139 +71,64 @@
     margin: 0;
     padding: 0;
     overflow: hidden;
+    background: var(--game-bg);
+    color: var(--game-white);
   }
 
   body {
-    background-color: var(--game-bg);
-    color: var(--game-white);
-    font-family: 'Inter', system-ui, sans-serif;
+    font-family: 'Share Tech Mono', monospace;
     -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
   }
 }
 
 @layer utilities {
-  .font-bebas {
-    font-family: 'Bebas Neue', 'Black Han Sans', 'Impact', sans-serif;
+  .font-display {
+    font-family: 'Bebas Neue', sans-serif;
     letter-spacing: 0.05em;
   }
 
-  .text-game-pink {
-    color: var(--game-pink);
-  }
-
-  .text-game-red {
-    color: var(--game-red);
-  }
-
-  .text-game-green {
-    color: var(--game-green);
-  }
-
-  .text-game-white {
-    color: var(--game-white);
-  }
-
-  .text-game-dim {
-    color: var(--game-dim);
-  }
-
-  .bg-game-bg {
-    background-color: var(--game-bg);
-  }
-
-  .bg-game-card {
-    background-color: var(--game-card);
-  }
-
-  .border-game-border {
-    border-color: var(--game-border);
-  }
-
-  .border-game-pink {
-    border-color: var(--game-pink);
-  }
-
-  .border-game-green {
-    border-color: var(--game-green);
+  .font-mono {
+    font-family: 'Share Tech Mono', monospace;
   }
 
   .glow-pink {
-    box-shadow: 0 0 20px rgba(255, 0, 102, 0.4), 0 0 60px rgba(255, 0, 102, 0.15);
+    box-shadow: 0 0 20px rgba(255, 45, 120, 0.5);
   }
 
   .glow-green {
-    box-shadow: 0 0 20px rgba(0, 255, 136, 0.4), 0 0 60px rgba(0, 255, 136, 0.15);
-  }
-
-  .glow-red {
-    box-shadow: 0 0 20px rgba(255, 51, 51, 0.4), 0 0 60px rgba(255, 51, 51, 0.15);
+    box-shadow: 0 0 20px rgba(0, 255, 136, 0.5);
   }
 
   .text-glow-pink {
-    text-shadow: 0 0 20px rgba(255, 0, 102, 0.8), 0 0 40px rgba(255, 0, 102, 0.4);
+    text-shadow: 0 0 20px rgba(255, 45, 120, 0.8);
   }
 
   .text-glow-green {
-    text-shadow: 0 0 20px rgba(0, 255, 136, 0.8), 0 0 40px rgba(0, 255, 136, 0.4);
+    text-shadow: 0 0 20px rgba(0, 255, 136, 0.8);
   }
+}
 
-  .text-glow-red {
-    text-shadow: 0 0 20px rgba(255, 51, 51, 0.8), 0 0 40px rgba(255, 51, 51, 0.4);
+@keyframes countdownPop {
+  0% {
+    transform: scale(1.5);
+    opacity: 0;
   }
+  60% {
+    transform: scale(0.95);
+    opacity: 1;
+  }
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
 
-  .text-glow-white {
-    text-shadow: 0 0 20px rgba(245, 245, 245, 0.6), 0 0 40px rgba(245, 245, 245, 0.2);
-  }
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
 
-  @keyframes pulse-pink {
-    0%, 100% { opacity: 1; }
-    50% { opacity: 0.6; }
-  }
-
-  @keyframes pulse-green {
-    0%, 100% { opacity: 1; }
-    50% { opacity: 0.7; }
-  }
-
-  @keyframes shake {
-    0%, 100% { transform: translateX(0); }
-    10%, 30%, 50%, 70%, 90% { transform: translateX(-4px); }
-    20%, 40%, 60%, 80% { transform: translateX(4px); }
-  }
-
-  @keyframes countdown-pop {
-    0% { transform: scale(0.5); opacity: 0; }
-    60% { transform: scale(1.1); opacity: 1; }
-    100% { transform: scale(1); opacity: 1; }
-  }
-
-  @keyframes fade-in-up {
-    0% { transform: translateY(20px); opacity: 0; }
-    100% { transform: translateY(0); opacity: 1; }
-  }
-
-  @keyframes scanline {
-    0% { transform: translateY(-100%); }
-    100% { transform: translateY(100vh); }
-  }
-
-  .animate-pulse-pink {
-    animation: pulse-pink 1.5s ease-in-out infinite;
-  }
-
-  .animate-pulse-green {
-    animation: pulse-green 2s ease-in-out infinite;
-  }
-
-  .animate-shake {
-    animation: shake 0.5s ease-in-out;
-  }
-
-  .animate-countdown-pop {
-    animation: countdown-pop 0.4s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
-  }
-
-  .animate-fade-in-up {
-    animation: fade-in-up 0.5s ease-out forwards;
-  }
+.animate-fade-in {
+  animation: fadeIn 0.4s ease-out forwards;
 }

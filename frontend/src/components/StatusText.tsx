@@ -1,43 +1,25 @@
-import React from 'react';
+import { GamePhase } from '../modules/gameState';
 
 interface StatusTextProps {
-  phase: string;
+  phase: GamePhase;
 }
 
-const StatusText: React.FC<StatusTextProps> = ({ phase }) => {
-  if (phase === 'green-light') {
-    return (
-      <div className="text-center animate-pulse-green">
-        <div
-          className="font-bebas tracking-widest text-game-green text-glow-green"
-          style={{ fontSize: 'clamp(2.5rem, 8vw, 5rem)', lineHeight: 1 }}
-        >
-          GREEN LIGHT
-        </div>
-        <div className="font-bebas text-sm tracking-[0.4em] text-game-green/60 mt-1">
-          MOVE FORWARD
-        </div>
-      </div>
-    );
-  }
+export function StatusText({ phase }: StatusTextProps) {
+  if (phase !== 'green-light' && phase !== 'red-light') return null;
 
-  if (phase === 'red-light') {
-    return (
-      <div className="text-center animate-pulse-pink">
-        <div
-          className="font-bebas tracking-widest text-game-red text-glow-red"
-          style={{ fontSize: 'clamp(2.5rem, 8vw, 5rem)', lineHeight: 1 }}
-        >
-          RED LIGHT
-        </div>
-        <div className="font-bebas text-sm tracking-[0.4em] text-game-red/60 mt-1">
-          FREEZE NOW
-        </div>
-      </div>
-    );
-  }
+  const isGreen = phase === 'green-light';
 
-  return null;
-};
-
-export default StatusText;
+  return (
+    <div
+      className="font-display text-4xl md:text-6xl tracking-widest text-center animate-pulse"
+      style={{
+        color: isGreen ? '#00ff88' : '#ff2d78',
+        textShadow: isGreen
+          ? '0 0 20px rgba(0,255,136,0.8), 0 0 40px rgba(0,255,136,0.4)'
+          : '0 0 20px rgba(255,45,120,0.8), 0 0 40px rgba(255,45,120,0.4)',
+      }}
+    >
+      {isGreen ? '🟢 GREEN LIGHT' : '🔴 RED LIGHT'}
+    </div>
+  );
+}

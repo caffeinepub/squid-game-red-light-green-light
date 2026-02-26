@@ -1,20 +1,24 @@
 {
   "schemaVersion": "1.0.0",
-  "projectStateVersion": 3,
-  "summary": "Squid Game: Red Light, Green Light browser game. Full-body webcam tracking with MediaPipe Pose (@mediapipe/pose npm package), real-time skeleton overlay, movement detection with smoothing, adjustable sensitivity, Green/Red Light game states with randomized timing, progress bar (fill only during Green Light when movement detected), immediate elimination on Red Light, survival timer, 3-2-1 countdown, procedural Web Audio API sounds, Squid Game aesthetic. Due to build failure, starting with core game UI/logic/sounds without MediaPipe first, then adding pose detection in a second step.",
+  "projectStateVersion": 11,
+  "summary": "Squid Game: Red Light, Green Light browser game — fully refactored into a 3D experience. Three.js (React Three Fiber) renders a full-screen 3D world with ground plane, finish line, and a doll at the far end. A 3D player capsule moves along a straight track with a third-person camera. @mediapipe/pose (npm, client-side) handles body tracking with a webcam overlay in the bottom-right corner and real-time skeleton drawn on top. Movement detection uses smoothed landmark deltas across core body points (shoulders, hips). Game logic preserved: Green Light advances player only when movement detected, Red Light causes immediate elimination on movement, randomized timing, survival timer, 3-2-1 countdown, procedural Web Audio API sounds, adjustable sensitivity slider, win state when player reaches finish line. Code is modular: scene.ts, poseTracking.ts, movementDetection.ts, gameState.ts.",
   "architectural_notes": [
-    "Building in two phases: (1) core game without MediaPipe, (2) add MediaPipe pose detection on top",
     "Use @mediapipe/pose npm package (bundled, not CDN) for pose detection",
-    "requestAnimationFrame loop for detection cycle",
     "Movement smoothing across recent frames to reduce false positives",
     "Progress advances only during Green Light when movement is detected; no movement = no progress",
     "Immediate elimination on Red Light if movement exceeds threshold — no grace period",
-    "Procedural sounds via Web Audio API only (no external audio files)"
+    "Procedural sounds via Web Audio API only (no external audio files)",
+    "Use Three.js via React Three Fiber for full-screen 3D scene (ground plane, finish line, doll, player capsule)",
+    "Third-person camera: slightly behind and above the player, following along straight track",
+    "Webcam overlay in bottom-right corner with MediaPipe Pose skeleton drawn on top",
+    "Movement detection uses smoothed landmark deltas across core body points (shoulders, hips)",
+    "Modular structure: scene.ts, poseTracking.ts, movementDetection.ts, gameState.ts"
   ],
   "known_issues": [
-    "Initial full build with MediaPipe failed — proceeding with phased approach"
+    "Webcam feed blank in overlay and MediaPipe skeleton not rendering — video element not connected to canvas or pose tracking starting before video stream is ready",
+    "Dead zone mechanic not reliably preventing elimination on small movements during Red Light — needs strengthened implementation in movement detection pipeline"
   ],
-  "isFixRequest": false,
+  "isFixRequest": true,
   "existing_features": [
     {
       "id": "feature-build-a-single-page-react-game-layout-with-a-squid-game-aesthetic-near-black-background-hot-pink-red-accents-ff0066-ff3333-stark-white-text-bold-cinematic-typography-and-a-full-viewport-dark-game-container",
@@ -87,23 +91,113 @@
         "REQ-9"
       ],
       "version": 1
+    },
+    {
+      "id": "feature-replace-the-existing-2d-canvas-game-with-a-full-screen-3d-scene-using-three-js-via-react-three-fiber-the-scene-must-include-a-ground-plane-extending-toward-a-distant-finish-line-a-finish-line-marker-and-a-doll-model-mesh-at-the-far-end-of-the-track",
+      "title": "Replace the existing 2D canvas game with a full-screen 3D scene using Three.js via React Three Fiber. The scene must include: a ground plane extending toward a distant finish line, a finish line marker, and a doll model/mesh at the far end of the track.",
+      "reqIds": [
+        "REQ-10"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-add-a-3d-player-object-capsule-or-character-mesh-that-moves-forward-along-a-straight-track-toward-the-finish-line-the-player-s-forward-progress-must-map-to-the-existing-0-100-progress-value-reaching-100-the-finish-line-triggers-the-won-state",
+      "title": "Add a 3D player object (capsule or character mesh) that moves forward along a straight track toward the finish line. The player's forward progress must map to the existing 0–100% progress value. Reaching 100% (the finish line) triggers the won state.",
+      "reqIds": [
+        "REQ-11"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-implement-a-third-person-camera-that-stays-slightly-behind-and-above-the-player-object-following-it-as-it-moves-forward-along-the-track",
+      "title": "Implement a third-person camera that stays slightly behind and above the player object, following it as it moves forward along the track.",
+      "reqIds": [
+        "REQ-12"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-integrate-mediapipe-pose-npm-package-fully-client-side-for-body-tracking-replace-the-existing-pixel-diff-movement-detection-with-smoothed-landmark-delta-calculations-using-core-body-points-shoulders-and-hips-display-the-webcam-feed-as-a-small-overlay-in-the-bottom-right-corner-of-the-screen-with-the-mediapipe-pose-skeleton-drawn-on-top-of-the-webcam-overlay-in-real-time",
+      "title": "Integrate @mediapipe/pose (npm package, fully client-side) for body tracking. Replace the existing pixel-diff movement detection with smoothed landmark delta calculations using core body points (shoulders and hips). Display the webcam feed as a small overlay in the bottom-right corner of the screen, with the MediaPipe pose skeleton drawn on top of the webcam overlay in real time.",
+      "reqIds": [
+        "REQ-13"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-restructure-the-frontend-code-into-modular-files-scene-ts-three-js-r3f-scene-setup-posetracking-ts-mediapipe-pose-integration-movementdetection-ts-landmark-delta-and-smoothing-logic-and-gamestate-ts-state-machine-manager-these-modules-must-be-imported-and-composed-in-the-main-app-game-component",
+      "title": "Restructure the frontend code into modular files: scene.ts (Three.js/R3F scene setup), poseTracking.ts (MediaPipe Pose integration), movementDetection.ts (landmark delta and smoothing logic), and gameState.ts (state machine manager). These modules must be imported and composed in the main App/game component.",
+      "reqIds": [
+        "REQ-14"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-preserve-all-existing-game-logic-in-the-3d-refactor-green-light-advances-the-3d-player-only-when-body-movement-landmark-delta-exceeds-the-threshold-red-light-causes-immediate-elimination-if-movement-exceeds-the-threshold-randomized-green-red-light-durations-3-2-1-countdown-before-game-start-survival-timer-procedural-web-audio-api-sound-effects-green-light-chime-red-light-alarm-elimination-sound-victory-fanfare-adjustable-sensitivity-slider-idle-countdown-green-light-red-light-eliminated-and-won-states-with-appropriate-ui-overlays",
+      "title": "Preserve all existing game logic in the 3D refactor: Green Light advances the 3D player only when body movement (landmark delta) exceeds the threshold; Red Light causes immediate elimination if movement exceeds the threshold; randomized green/red light durations; 3-2-1 countdown before game start; survival timer; procedural Web Audio API sound effects (green light chime, red light alarm, elimination sound, victory fanfare); adjustable sensitivity slider; idle, countdown, green-light, red-light, eliminated, and won states with appropriate UI overlays.",
+      "reqIds": [
+        "REQ-15"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-fix-the-webcam-overlay-so-the-live-camera-feed-is-visible-ensure-the-video-element-s-srcobject-is-correctly-assigned-from-the-getusermedia-stream-the-video-element-is-set-to-autoplay-and-playsinline-and-the-video-is-fully-loaded-and-playing-readystate-have-enough-data-or-the-playing-event-has-fired-before-any-canvas-drawing-or-mediapipe-frame-processing-begins",
+      "title": "Fix the webcam overlay so the live camera feed is visible. Ensure the video element's srcObject is correctly assigned from the getUserMedia stream, the video element is set to autoplay and playsInline, and the video is fully loaded and playing (readyState >= HAVE_ENOUGH_DATA or the 'playing' event has fired) before any canvas drawing or MediaPipe frame processing begins.",
+      "reqIds": [
+        "REQ-16"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-fix-the-mediapipe-pose-skeleton-so-it-renders-on-top-of-the-webcam-feed-in-the-overlay-canvas-the-pose-instance-must-only-receive-frames-via-pose-send-or-the-requestanimationframe-loop-after-the-video-element-is-confirmed-active-and-playing-ensure-the-skeleton-drawing-utility-in-posetracking-ts-is-called-with-valid-landmark-results-on-every-processed-frame-and-draws-onto-the-correct-overlay-canvas-context",
+      "title": "Fix the MediaPipe Pose skeleton so it renders on top of the webcam feed in the overlay canvas. The Pose instance must only receive frames (via pose.send or the requestAnimationFrame loop) after the video element is confirmed active and playing. Ensure the skeleton drawing utility in poseTracking.ts is called with valid landmark results on every processed frame and draws onto the correct overlay canvas context.",
+      "reqIds": [
+        "REQ-17"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-implement-a-dead-zone-mechanic-in-the-movement-detection-and-game-state-logic-define-the-dead-zone-as-any-movement-score-below-10-of-the-current-sensitivity-threshold-during-red-light-if-the-movement-score-falls-within-the-dead-zone-score-threshold-0-10-the-player-is-safe-and-must-not-be-eliminated-during-green-light-if-the-movement-score-falls-within-the-dead-zone-the-player-must-not-advance-no-progress-the-dead-zone-check-must-use-the-same-threshold-value-that-the-sensitivity-slider-controls-so-it-scales-proportionally-when-the-slider-is-adjusted",
+      "title": "Implement a dead zone mechanic in the movement detection and game state logic: define the dead zone as any movement score below 10% of the current sensitivity threshold. During Red Light, if the movement score falls within the dead zone (score < threshold × 0.10), the player is safe and must NOT be eliminated. During Green Light, if the movement score falls within the dead zone, the player must NOT advance (no progress). The dead zone check must use the same threshold value that the sensitivity slider controls so it scales proportionally when the slider is adjusted.",
+      "reqIds": [
+        "REQ-18"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-in-movementdetection-ts-strengthen-the-dead-zone-check-so-that-any-movement-score-strictly-below-threshold-0-10-is-clamped-to-zero-before-being-returned-the-raw-smoothed-score-must-be-evaluated-against-the-dead-zone-boundary-first-and-if-it-falls-within-the-dead-zone-the-exported-movement-score-must-be-0-not-the-raw-value-this-ensures-downstream-game-logic-in-usegamestate-ts-and-gamestate-ts-never-receives-a-non-zero-score-for-sub-dead-zone-motion",
+      "title": "In movementDetection.ts, strengthen the dead zone check so that any movement score strictly below (threshold × 0.10) is clamped to zero before being returned. The raw smoothed score must be evaluated against the dead zone boundary first, and if it falls within the dead zone, the exported movement score must be 0 — not the raw value. This ensures downstream game logic in useGameState.ts and gameState.ts never receives a non-zero score for sub-dead-zone motion.",
+      "reqIds": [
+        "REQ-19"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-in-gamestate-ts-add-an-explicit-guard-in-the-elimination-check-logic-before-transitioning-to-eliminated-assert-that-the-movement-score-is-strictly-greater-than-threshold-0-10-if-the-score-is-at-or-below-that-boundary-the-elimination-transition-must-be-blocked-unconditionally-acting-as-a-second-line-of-defence-independent-of-the-clamping-in-movementdetection-ts",
+      "title": "In gameState.ts, add an explicit guard in the elimination-check logic: before transitioning to 'eliminated', assert that the movement score is strictly greater than (threshold × 0.10). If the score is at or below that boundary, the elimination transition must be blocked unconditionally, acting as a second line of defence independent of the clamping in movementDetection.ts.",
+      "reqIds": [
+        "REQ-20"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-in-usegamestate-ts-ensure-the-movement-score-consumed-for-phase-transition-decisions-comes-from-the-post-dead-zone-clamped-value-returned-by-movementdetection-ts-remove-or-replace-any-intermediate-computation-that-re-evaluates-the-raw-landmark-delta-directly-against-the-sensitivity-threshold-without-the-dead-zone-clamp-applied",
+      "title": "In useGameState.ts, ensure the movement score consumed for phase-transition decisions comes from the post-dead-zone-clamped value returned by movementDetection.ts. Remove or replace any intermediate computation that re-evaluates the raw landmark delta directly against the sensitivity threshold without the dead zone clamp applied.",
+      "reqIds": [
+        "REQ-21"
+      ],
+      "version": 1
     }
   ],
   "new_feature_requests": [
     {
       "id": "AR-1",
-      "summary": "Core game without MediaPipe: game states, movement detection stub, procedural sounds, Squid Game aesthetic, progress bar, countdown, survival timer",
-      "reqIds": [],
-      "status": "pending"
-    },
-    {
-      "id": "AR-2",
-      "summary": "Add @mediapipe/pose npm package integration with webcam feed, real-time skeleton overlay, and frame-to-frame landmark movement detection",
+      "summary": "Dead zone mechanic: movement below 10% of the threshold during Red Light = safe (no elimination); during Green Light = no progress. Applies relative to the current sensitivity threshold.",
       "reqIds": [],
       "status": "pending"
     }
   ],
-  "gameProjectType": "2d",
+  "gameProjectType": "3d",
   "projectName": "Squid Game: Red Light, Green Light",
   "clarification_mode": "instant",
   "clarification_rounds": 0

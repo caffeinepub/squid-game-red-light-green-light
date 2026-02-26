@@ -1,36 +1,24 @@
 {
   "kind": "spec_vs_diff_report",
   "version": "1.0",
-  "generatedAt": "2026-02-26T09:48:49.644Z",
-  "summary": "The diff implements a comprehensive Squid Game Red Light Green Light application covering all 9 requirements. All major features are present: game state machine, movement detection via webcam/pixel comparison, progress bar, elimination logic, sensitivity slider, survival timer, Web Audio API sounds, and full UI screens. The implementation appears complete with no missing requirements and no hallucinated features beyond the spec.",
+  "generatedAt": "2026-02-26T10:54:40.150Z",
+  "summary": "All three requirements (REQ-19, REQ-20, REQ-21) appear to be implemented. movementDetection.ts exports clampToDeadZone that zeroes scores at or below threshold × 0.10. gameState.ts adds dead zone guards in both shouldEliminate and shouldAdvanceProgress. useGameState.ts imports clampToDeadZone and applies it before passing scores to game state functions. The implementation is consistent with the specified acceptance criteria.",
   "missing_requirements": [],
-  "hallucinated_features": [],
-  "confidence": 0.91,
+  "hallucinated_features": [
+    {
+      "description": "Dead zone guard also added to shouldAdvanceProgress in gameState.ts",
+      "reason": "REQ-20 only specified adding the dead zone guard to the elimination-check logic in gameState.ts. The diff also adds a dead zone guard inside shouldAdvanceProgress, which was not requested by any requirement.",
+      "evidence": [
+        "frontend/src/modules/gameState.ts"
+      ]
+    }
+  ],
+  "confidence": 0.82,
   "changed_files": [
-    "all_files_summary.json",
-    "backend/main.mo",
     "frontend-file-summaries.txt",
-    "frontend/index.css",
-    "frontend/index.html",
-    "frontend/src/App.tsx",
-    "frontend/src/components/CountdownDisplay.tsx",
-    "frontend/src/components/EliminatedScreen.tsx",
-    "frontend/src/components/GameCanvas.tsx",
-    "frontend/src/components/IdleScreen.tsx",
-    "frontend/src/components/ProgressBar.tsx",
-    "frontend/src/components/SensitivitySlider.tsx",
-    "frontend/src/components/StatusText.tsx",
-    "frontend/src/components/Timer.tsx",
-    "frontend/src/components/WonScreen.tsx",
-    "frontend/src/hooks/useActor.ts",
     "frontend/src/hooks/useGameState.ts",
-    "frontend/src/hooks/useInternetIdentity.ts",
-    "frontend/src/hooks/useMovementDetection.ts",
-    "frontend/src/hooks/useWebcam.ts",
-    "frontend/src/index.css",
-    "frontend/src/main.tsx",
-    "frontend/src/utils/audioEffects.ts",
-    "frontend/tailwind.config.js",
+    "frontend/src/modules/gameState.ts",
+    "frontend/src/modules/movementDetection.ts",
     "project_state.json"
   ]
 }

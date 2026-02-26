@@ -1,31 +1,22 @@
-import React, { useEffect, useState } from 'react';
-
 interface CountdownDisplayProps {
-  value: number;
+  countdown: number;
 }
 
-const CountdownDisplay: React.FC<CountdownDisplayProps> = ({ value }) => {
-  const [key, setKey] = useState(value);
-
-  useEffect(() => {
-    setKey(value);
-  }, [value]);
-
+export function CountdownDisplay({ countdown }: CountdownDisplayProps) {
   return (
-    <div className="text-center">
-      <div className="font-bebas text-xs tracking-[0.5em] text-game-dim mb-2">GET READY</div>
+    <div className="flex flex-col items-center gap-4">
+      <div className="text-white/60 font-mono text-sm tracking-widest">GET READY</div>
       <div
-        key={key}
-        className="font-bebas text-game-white text-glow-white animate-countdown-pop"
-        style={{ fontSize: 'clamp(6rem, 20vw, 12rem)', lineHeight: 1 }}
+        key={countdown}
+        className="font-display text-8xl md:text-9xl text-white"
+        style={{
+          textShadow: '0 0 30px rgba(255,255,255,0.6)',
+          animation: 'countdownPop 0.4s ease-out',
+        }}
       >
-        {value}
+        {countdown}
       </div>
-      <div className="font-bebas text-sm tracking-[0.4em] text-game-dim mt-2">
-        STAND STILL
-      </div>
+      <div className="text-white/40 font-mono text-xs tracking-widest">DON'T MOVE ON RED LIGHT</div>
     </div>
   );
-};
-
-export default CountdownDisplay;
+}

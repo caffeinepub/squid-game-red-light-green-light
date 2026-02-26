@@ -1,28 +1,21 @@
-import React from 'react';
-
 interface TimerProps {
-  time: number; // seconds
-  label?: string;
+  elapsedTime: number; // ms
 }
 
-const Timer: React.FC<TimerProps> = ({ time, label = 'TIME' }) => {
-  const minutes = Math.floor(time / 60);
-  const seconds = Math.floor(time % 60);
-  const tenths = Math.floor((time % 1) * 10);
+export function Timer({ elapsedTime }: TimerProps) {
+  const totalSeconds = elapsedTime / 1000;
+  const minutes = Math.floor(totalSeconds / 60);
+  const seconds = Math.floor(totalSeconds % 60);
+  const tenths = Math.floor((totalSeconds % 1) * 10);
 
   const formatted =
     minutes > 0
-      ? `${minutes}:${seconds.toString().padStart(2, '0')}.${tenths}`
-      : `${seconds}.${tenths}s`;
+      ? `${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}.${tenths}`
+      : `${String(seconds).padStart(2, '0')}.${tenths}s`;
 
   return (
-    <div className="text-center">
-      <div className="font-bebas text-xs tracking-widest text-game-dim mb-0.5">{label}</div>
-      <div className="font-bebas text-3xl tracking-wider text-game-white text-glow-white">
-        {formatted}
-      </div>
+    <div className="font-display text-white/80 text-lg tracking-widest">
+      {formatted}
     </div>
   );
-};
-
-export default Timer;
+}

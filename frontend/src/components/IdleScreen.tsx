@@ -1,74 +1,55 @@
-import React from 'react';
-
 interface IdleScreenProps {
   onStart: () => void;
 }
 
-const IdleScreen: React.FC<IdleScreenProps> = ({ onStart }) => {
+export function IdleScreen({ onStart }: IdleScreenProps) {
   return (
-    <div className="flex flex-col items-center justify-center h-full text-center px-6 animate-fade-in-up">
+    <div className="flex flex-col items-center gap-8 max-w-md mx-auto text-center px-4">
       {/* Title */}
-      <div className="mb-2">
-        <div className="font-bebas text-xs tracking-[0.6em] text-game-pink mb-3">
-          ▶ SQUID GAME
-        </div>
+      <div>
+        <div className="text-white/40 font-mono text-xs tracking-[0.4em] mb-2">SQUID GAME</div>
         <h1
-          className="font-bebas text-game-white leading-none"
-          style={{ fontSize: 'clamp(2.5rem, 8vw, 5.5rem)', letterSpacing: '0.05em' }}
+          className="font-display text-5xl md:text-7xl text-white"
+          style={{ textShadow: '0 0 30px rgba(255,45,120,0.6)' }}
         >
           RED LIGHT
-        </h1>
-        <div className="flex items-center justify-center gap-3 my-1">
-          <div className="h-px flex-1 bg-game-border max-w-16" />
-          <span className="font-bebas text-game-dim text-sm tracking-widest">VS</span>
-          <div className="h-px flex-1 bg-game-border max-w-16" />
-        </div>
-        <h1
-          className="font-bebas text-game-green leading-none"
-          style={{ fontSize: 'clamp(2.5rem, 8vw, 5.5rem)', letterSpacing: '0.05em' }}
-        >
+          <br />
           GREEN LIGHT
         </h1>
+        <div className="text-white/40 font-mono text-xs tracking-[0.4em] mt-2">3D EDITION</div>
       </div>
 
       {/* Instructions */}
-      <div className="mt-6 mb-8 max-w-sm">
-        <div className="bg-game-card border border-game-border p-4 text-left space-y-2">
-          <div className="flex items-start gap-3">
-            <span className="text-game-green font-bebas text-lg leading-none mt-0.5">●</span>
-            <p className="text-game-dim text-sm leading-relaxed">
-              <span className="text-game-green font-semibold">GREEN LIGHT</span> — Move to advance your progress bar
-            </p>
-          </div>
-          <div className="flex items-start gap-3">
-            <span className="text-game-red font-bebas text-lg leading-none mt-0.5">●</span>
-            <p className="text-game-dim text-sm leading-relaxed">
-              <span className="text-game-red font-semibold">RED LIGHT</span> — Freeze completely or be eliminated
-            </p>
-          </div>
-          <div className="flex items-start gap-3">
-            <span className="text-game-pink font-bebas text-lg leading-none mt-0.5">●</span>
-            <p className="text-game-dim text-sm leading-relaxed">
-              Reach <span className="text-game-white font-semibold">100%</span> progress to win
-            </p>
-          </div>
-        </div>
+      <div
+        className="border border-white/10 rounded-lg p-4 text-left w-full"
+        style={{ background: 'rgba(255,255,255,0.03)' }}
+      >
+        <div className="text-white/60 font-mono text-xs tracking-widest mb-3">HOW TO PLAY</div>
+        <ul className="space-y-2">
+          {[
+            '🟢 GREEN LIGHT — Move your body to advance',
+            '🔴 RED LIGHT — Freeze completely or be eliminated',
+            '🎯 Reach the finish line to win',
+            '📷 Allow camera access for body tracking',
+          ].map((instruction, i) => (
+            <li key={i} className="text-white/70 font-mono text-xs flex items-start gap-2">
+              <span>{instruction}</span>
+            </li>
+          ))}
+        </ul>
       </div>
 
       {/* Start button */}
       <button
         onClick={onStart}
-        className="relative group font-bebas text-2xl tracking-[0.3em] px-12 py-4 bg-game-pink text-game-white border-2 border-game-pink hover:bg-transparent hover:text-game-pink transition-all duration-200 glow-pink"
-        style={{ clipPath: 'polygon(8px 0%, 100% 0%, calc(100% - 8px) 100%, 0% 100%)' }}
+        className="w-full py-4 font-display text-2xl tracking-widest text-black rounded-lg transition-all duration-200 hover:scale-105 active:scale-95"
+        style={{
+          background: 'linear-gradient(135deg, #ff2d78, #ff6b9d)',
+          boxShadow: '0 0 30px rgba(255,45,120,0.5)',
+        }}
       >
-        <span className="relative z-10">▶ START GAME</span>
+        START GAME
       </button>
-
-      <p className="mt-4 text-game-dim text-xs tracking-widest">
-        ALLOW CAMERA ACCESS FOR MOVEMENT DETECTION
-      </p>
     </div>
   );
-};
-
-export default IdleScreen;
+}
