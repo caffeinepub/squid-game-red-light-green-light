@@ -1,77 +1,38 @@
 {
   "kind": "build_request",
-  "title": "Strengthen dead zone mechanic to reliably prevent elimination on small movements",
-  "projectName": "Squid Game: Red Light Green Light",
+  "title": "Reduce movement score decay delay when player stops moving",
   "priority": "normal",
   "requirements": [
     {
-      "id": "REQ-19",
-      "text": "In movementDetection.ts, strengthen the dead zone check so that any movement score strictly below (threshold × 0.10) is clamped to zero before being returned. The raw smoothed score must be evaluated against the dead zone boundary first, and if it falls within the dead zone, the exported movement score must be 0 — not the raw value. This ensures downstream game logic in useGameState.ts and gameState.ts never receives a non-zero score for sub-dead-zone motion.",
+      "id": "REQ-26",
+      "text": "In movementDetection.ts, make the exponential smoothing asymmetric: when the current per-landmark delta (after base-threshold pre-filter) is zero or below the base threshold — meaning the player has stopped moving — reset the smoothed score to zero immediately rather than decaying it gradually. Only apply the slow decay formula (smoothedDelta = prevDelta × 0.8 + currentDelta × 0.2) when active movement is detected. This ensures the exported movement score drops to zero the moment no movement is registered, eliminating the perceived lag when the player freezes.",
       "target": "frontend",
       "source": {
         "messageIds": [
-          "msg-recent-user-1",
-          "msg-recent-user-2"
+          "msg-latest"
         ],
         "quotes": [
-          "dont eliminate when movement is less than 10%",
-          "get started"
+          "i want the movement to immediately update when the player stops moving. I dont like the delay"
         ]
       },
       "acceptanceCriteria": [
-        "In movementDetection.ts, any smoothed movement score below (threshold × 0.10) is clamped to 0 before being returned to callers.",
-        "During Red Light, if the actual movement score (post-clamp) is 0, the game state must NOT transition to 'eliminated'.",
-        "During Green Light, if the actual movement score (post-clamp) is 0, the progress value must NOT increase.",
-        "The dead zone boundary scales correctly when the sensitivity slider is adjusted — a lower threshold produces a proportionally smaller dead zone and a higher threshold produces a larger one.",
-        "The dead zone clamping is applied before the score is passed to any game state evaluation function, so no other code path can bypass it."
-      ]
-    },
-    {
-      "id": "REQ-20",
-      "text": "In gameState.ts, add an explicit guard in the elimination-check logic: before transitioning to 'eliminated', assert that the movement score is strictly greater than (threshold × 0.10). If the score is at or below that boundary, the elimination transition must be blocked unconditionally, acting as a second line of defence independent of the clamping in movementDetection.ts.",
-      "target": "frontend",
-      "source": {
-        "messageIds": [
-          "msg-recent-user-1"
-        ],
-        "quotes": [
-          "dont eliminate when movement is less than 10%"
-        ]
-      },
-      "acceptanceCriteria": [
-        "The elimination branch in gameState.ts checks (movementScore > threshold * 0.10) before returning the 'eliminated' state.",
-        "A movement score equal to exactly (threshold × 0.10) does NOT cause elimination.",
-        "The guard uses the same threshold value passed to the function, ensuring it stays in sync with the sensitivity slider."
-      ]
-    },
-    {
-      "id": "REQ-21",
-      "text": "In useGameState.ts, ensure the movement score consumed for phase-transition decisions comes from the post-dead-zone-clamped value returned by movementDetection.ts. Remove or replace any intermediate computation that re-evaluates the raw landmark delta directly against the sensitivity threshold without the dead zone clamp applied.",
-      "target": "frontend",
-      "source": {
-        "messageIds": [
-          "msg-recent-user-1"
-        ],
-        "quotes": [
-          "dont eliminate when movement is less than 10%"
-        ]
-      },
-      "acceptanceCriteria": [
-        "useGameState.ts does not independently compute a movement score from raw landmarks to decide elimination — it relies solely on the value returned from the movementDetection module.",
-        "No code path in useGameState.ts bypasses the dead zone check when evaluating whether to eliminate the player or advance progress.",
-        "The sensitivity threshold used in useGameState.ts for any remaining checks matches the value from the sensitivity slider state."
+        "When all tracked landmarks (shoulders, hips, nose) produce per-landmark deltas below the base movement threshold in the current frame, the smoothed score is set to 0 immediately — not decayed from its previous value.",
+        "When active movement is detected (at least one landmark delta exceeds the base threshold), the existing exponential smoothing formula (prevDelta × 0.8 + currentDelta × 0.2) continues to apply.",
+        "The dead-zone clamp and downstream game logic in useGameState.ts and gameState.ts are unaffected — they still consume the clamped score from movementDetection.ts.",
+        "During Red Light, stopping movement immediately causes the exported score to read 0, preventing any false eliminations due to smoothing tail-off.",
+        "During Green Light, stopping movement immediately halts progress advancement with no visible delay."
       ]
     }
   ],
   "constraints": [
-    "Do not change the sensitivity slider range (1–100) or its mapping to the threshold value.",
-    "Do not alter any immutable frontend paths (hooks/useInternetIdentity.ts, hooks/useActor.ts, main.tsx, components/ui).",
-    "Do not modify the backend."
+    "Do not change the exponential smoothing behaviour when movement IS actively occurring — only the stop/reset path changes.",
+    "Do not modify any immutable frontend paths: useInternetIdentity.ts, useActor.ts, main.tsx, or components/ui.",
+    "The dead zone guard in gameState.ts and the clamping in movementDetection.ts must remain intact."
   ],
   "nonGoals": [
-    "Changing the dead zone percentage from 10% to any other value.",
-    "Adding a visual indicator for the dead zone in the UI.",
-    "Modifying any other game mechanic beyond the dead zone elimination fix.",
+    "Changing the smoothing alpha values used during active movement.",
+    "Modifying the 200ms elimination confirmation window in gameState.ts or useGameState.ts.",
+    "Altering the base movement threshold default value.",
     "Any backend changes."
   ],
   "imageRequirements": {

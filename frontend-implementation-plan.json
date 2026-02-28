@@ -1,55 +1,23 @@
 {
   "kind": "implementation_plan",
   "version": "1.0",
-  "title": "Strengthen dead zone mechanic to reliably prevent elimination on small movements",
+  "title": "Reduce movement score decay delay when player stops moving",
   "requirements": [
     {
-      "id": "REQ-19",
-      "summary": "Strengthen the dead zone check in movementDetection.ts to clamp any movement score strictly below (threshold × 0.10) to zero before returning, ensuring downstream game logic never receives non-zero scores for sub-dead-zone motion",
+      "id": "REQ-26",
+      "summary": "Implement asymmetric exponential smoothing in movementDetection.ts to reset the smoothed movement score to zero immediately when the player stops moving, while maintaining the existing slow decay formula during active movement",
       "acceptanceCriteria": [
-        "In movementDetection.ts, any smoothed movement score below (threshold × 0.10) is clamped to 0 before being returned to callers.",
-        "During Red Light, if the actual movement score (post-clamp) is 0, the game state must NOT transition to 'eliminated'.",
-        "During Green Light, if the actual movement score (post-clamp) is 0, the progress value must NOT increase.",
-        "The dead zone boundary scales correctly when the sensitivity slider is adjusted — a lower threshold produces a proportionally smaller dead zone and a higher threshold produces a larger one.",
-        "The dead zone clamping is applied before the score is passed to any game state evaluation function, so no other code path can bypass it."
+        "When all tracked landmarks (shoulders, hips, nose) produce per-landmark deltas below the base movement threshold in the current frame, the smoothed score is set to 0 immediately — not decayed from its previous value.",
+        "When active movement is detected (at least one landmark delta exceeds the base threshold), the existing exponential smoothing formula (prevDelta × 0.8 + currentDelta × 0.2) continues to apply.",
+        "The dead-zone clamp and downstream game logic in useGameState.ts and gameState.ts are unaffected — they still consume the clamped score from movementDetection.ts.",
+        "During Red Light, stopping movement immediately causes the exported score to read 0, preventing any false eliminations due to smoothing tail-off.",
+        "During Green Light, stopping movement immediately halts progress advancement with no visible delay."
       ],
       "file_operations": [
         {
           "path": "frontend/src/modules/movementDetection.ts",
           "operation": "modify",
-          "description": "Add explicit dead zone clamping logic that evaluates the raw smoothed movement score against (threshold × 0.10) and clamps it to 0 if below that boundary. The dead zone check must be applied after smoothing but before returning the score to any caller. Ensure the function receives the current sensitivity threshold as a parameter and computes the dead zone boundary dynamically. Return 0 for any score at or below the dead zone boundary, otherwise return the smoothed score unchanged."
-        }
-      ]
-    },
-    {
-      "id": "REQ-20",
-      "summary": "Add an explicit guard in gameState.ts elimination-check logic to block elimination transitions when movement score is at or below (threshold × 0.10), acting as a second line of defence",
-      "acceptanceCriteria": [
-        "The elimination branch in gameState.ts checks (movementScore > threshold * 0.10) before returning the 'eliminated' state.",
-        "A movement score equal to exactly (threshold × 0.10) does NOT cause elimination.",
-        "The guard uses the same threshold value passed to the function, ensuring it stays in sync with the sensitivity slider."
-      ],
-      "file_operations": [
-        {
-          "path": "frontend/src/modules/gameState.ts",
-          "operation": "modify",
-          "description": "Add an explicit guard condition in the elimination-check logic that asserts movementScore > (threshold * 0.10) before allowing a transition to the 'eliminated' state. If the score is at or below the dead zone boundary, the function must not return 'eliminated' regardless of other conditions. This guard acts as a safety check independent of the clamping in movementDetection.ts. Ensure the threshold parameter is used consistently across all checks."
-        }
-      ]
-    },
-    {
-      "id": "REQ-21",
-      "summary": "Ensure useGameState.ts consumes the post-dead-zone-clamped movement score from movementDetection.ts and does not independently compute movement scores from raw landmarks",
-      "acceptanceCriteria": [
-        "useGameState.ts does not independently compute a movement score from raw landmarks to decide elimination — it relies solely on the value returned from the movementDetection module.",
-        "No code path in useGameState.ts bypasses the dead zone check when evaluating whether to eliminate the player or advance progress.",
-        "The sensitivity threshold used in useGameState.ts for any remaining checks matches the value from the sensitivity slider state."
-      ],
-      "file_operations": [
-        {
-          "path": "frontend/src/hooks/useGameState.ts",
-          "operation": "modify",
-          "description": "Review and refactor the hook to ensure all movement score evaluations for phase transitions, elimination decisions, and progress advancement rely exclusively on the clamped value returned by movementDetection.ts. Remove or replace any code that independently computes movement from raw pose landmarks without applying the dead zone clamp. Ensure the sensitivity threshold passed to movementDetection matches the current slider state value. Verify that no intermediate computation bypasses the dead zone check when deciding to eliminate the player or advance progress."
+          "description": "Modify the exponential smoothing logic to detect when the current per-landmark delta (after base-threshold pre-filter) indicates no active movement. When all landmarks produce deltas at or below the base threshold, immediately reset the smoothed score to 0 instead of applying the decay formula. When active movement is detected (at least one landmark delta exceeds the base threshold), continue using the existing exponential smoothing formula (prevDelta × 0.8 + currentDelta × 0.2). Ensure the dead-zone clamp and sensitivity-to-threshold mapping remain intact and unchanged."
         }
       ]
     }

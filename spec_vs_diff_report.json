@@ -1,23 +1,13 @@
 {
   "kind": "spec_vs_diff_report",
   "version": "1.0",
-  "generatedAt": "2026-02-26T10:54:40.150Z",
-  "summary": "All three requirements (REQ-19, REQ-20, REQ-21) appear to be implemented. movementDetection.ts exports clampToDeadZone that zeroes scores at or below threshold × 0.10. gameState.ts adds dead zone guards in both shouldEliminate and shouldAdvanceProgress. useGameState.ts imports clampToDeadZone and applies it before passing scores to game state functions. The implementation is consistent with the specified acceptance criteria.",
+  "generatedAt": "2026-02-28T12:06:17.607Z",
+  "summary": "REQ-26 is fully implemented in frontend/src/modules/movementDetection.ts. The diff shows asymmetric smoothing: when avgDelta === 0 (all landmarks below base threshold), the smoothed score is immediately reset to 0; when avgDelta > 0, the existing exponential formula (prev×0.8 + current×0.2) is applied. The dead-zone guard and downstream logic are untouched. No hallucinated features detected.",
   "missing_requirements": [],
-  "hallucinated_features": [
-    {
-      "description": "Dead zone guard also added to shouldAdvanceProgress in gameState.ts",
-      "reason": "REQ-20 only specified adding the dead zone guard to the elimination-check logic in gameState.ts. The diff also adds a dead zone guard inside shouldAdvanceProgress, which was not requested by any requirement.",
-      "evidence": [
-        "frontend/src/modules/gameState.ts"
-      ]
-    }
-  ],
-  "confidence": 0.82,
+  "hallucinated_features": [],
+  "confidence": 0.97,
   "changed_files": [
     "frontend-file-summaries.txt",
-    "frontend/src/hooks/useGameState.ts",
-    "frontend/src/modules/gameState.ts",
     "frontend/src/modules/movementDetection.ts",
     "project_state.json"
   ]

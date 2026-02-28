@@ -1,46 +1,24 @@
 {
   "kind": "coverage_report",
   "version": "1.0",
-  "generatedAt": "2026-02-26T10:54:40.153Z",
+  "generatedAt": "2026-02-28T12:06:17.610Z",
   "sources": {
     "buildRequest": true,
     "implementationPlan": true
   },
   "requirements": {
-    "total": 3,
-    "implemented": 3,
+    "total": 1,
+    "implemented": 1,
     "items": [
       {
-        "id": "REQ-19",
-        "summary": "In movementDetection.ts, strengthen the dead zone check so that any movement score strictly below (threshold × 0.10) is clamped to zero before being returned. The raw smoothed score must be evaluated against the dead zone boundary first, and if it falls within the dead zone, the exported movement score must be 0 — not the raw value. This ensures downstream game logic in useGameState.ts and gameState.ts never receives a non-zero score for sub-dead-zone motion.",
+        "id": "REQ-26",
+        "summary": "In movementDetection.ts, make the exponential smoothing asymmetric: when the current per-landmark delta (after base-threshold pre-filter) is zero or below the base threshold — meaning the player has stopped moving — reset the smoothed score to zero immediately rather than decaying it gradually. Only apply the slow decay formula (smoothedDelta = prevDelta × 0.8 + currentDelta × 0.2) when active movement is detected. This ensures the exported movement score drops to zero the moment no movement is registered, eliminating the perceived lag when the player freezes.",
         "status": "implemented",
         "plannedFiles": [
           "frontend/src/modules/movementDetection.ts"
         ],
         "matchedFiles": [
           "frontend/src/modules/movementDetection.ts"
-        ]
-      },
-      {
-        "id": "REQ-20",
-        "summary": "In gameState.ts, add an explicit guard in the elimination-check logic: before transitioning to 'eliminated', assert that the movement score is strictly greater than (threshold × 0.10). If the score is at or below that boundary, the elimination transition must be blocked unconditionally, acting as a second line of defence independent of the clamping in movementDetection.ts.",
-        "status": "implemented",
-        "plannedFiles": [
-          "frontend/src/modules/gameState.ts"
-        ],
-        "matchedFiles": [
-          "frontend/src/modules/gameState.ts"
-        ]
-      },
-      {
-        "id": "REQ-21",
-        "summary": "In useGameState.ts, ensure the movement score consumed for phase-transition decisions comes from the post-dead-zone-clamped value returned by movementDetection.ts. Remove or replace any intermediate computation that re-evaluates the raw landmark delta directly against the sensitivity threshold without the dead zone clamp applied.",
-        "status": "implemented",
-        "plannedFiles": [
-          "frontend/src/hooks/useGameState.ts"
-        ],
-        "matchedFiles": [
-          "frontend/src/hooks/useGameState.ts"
         ]
       }
     ]
@@ -50,8 +28,6 @@
     "feature_evidence.json",
     "frontend-file-summaries.txt",
     "frontend-implementation-plan.json",
-    "frontend/src/hooks/useGameState.ts",
-    "frontend/src/modules/gameState.ts",
     "frontend/src/modules/movementDetection.ts",
     "project_state.json",
     "scratch/component-selection.json",

@@ -32,6 +32,13 @@ export const INITIAL_GAME_STATE: GameState = {
  */
 export const DEAD_ZONE_PERCENTAGE = 0.10;
 
+/**
+ * Time confirmation window for red-light elimination (milliseconds).
+ * Movement must stay above threshold for this duration before elimination is triggered.
+ * A single frame or brief spike will NOT cause elimination.
+ */
+export const CONFIRMATION_WINDOW_MS = 200;
+
 export function getRandomLightDuration(): number {
   // 2000–6000 ms
   return 2000 + Math.random() * 4000;

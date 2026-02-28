@@ -1,6 +1,6 @@
 {
   "schemaVersion": "1.0.0",
-  "projectStateVersion": 11,
+  "projectStateVersion": 15,
   "summary": "Squid Game: Red Light, Green Light browser game — fully refactored into a 3D experience. Three.js (React Three Fiber) renders a full-screen 3D world with ground plane, finish line, and a doll at the far end. A 3D player capsule moves along a straight track with a third-person camera. @mediapipe/pose (npm, client-side) handles body tracking with a webcam overlay in the bottom-right corner and real-time skeleton drawn on top. Movement detection uses smoothed landmark deltas across core body points (shoulders, hips). Game logic preserved: Green Light advances player only when movement detected, Red Light causes immediate elimination on movement, randomized timing, survival timer, 3-2-1 countdown, procedural Web Audio API sounds, adjustable sensitivity slider, win state when player reaches finish line. Code is modular: scene.ts, poseTracking.ts, movementDetection.ts, gameState.ts.",
   "architectural_notes": [
     "Use @mediapipe/pose npm package (bundled, not CDN) for pose detection",
@@ -11,14 +11,13 @@
     "Use Three.js via React Three Fiber for full-screen 3D scene (ground plane, finish line, doll, player capsule)",
     "Third-person camera: slightly behind and above the player, following along straight track",
     "Webcam overlay in bottom-right corner with MediaPipe Pose skeleton drawn on top",
-    "Movement detection uses smoothed landmark deltas across core body points (shoulders, hips)",
-    "Modular structure: scene.ts, poseTracking.ts, movementDetection.ts, gameState.ts"
+    "Modular structure: scene.ts, poseTracking.ts, movementDetection.ts, gameState.ts",
+    "Elimination requires movement above threshold sustained for 200–300ms (time confirmation window) to prevent single-frame false triggers"
   ],
   "known_issues": [
-    "Webcam feed blank in overlay and MediaPipe skeleton not rendering — video element not connected to canvas or pose tracking starting before video stream is ready",
-    "Dead zone mechanic not reliably preventing elimination on small movements during Red Light — needs strengthened implementation in movement detection pipeline"
+    "Webcam feed blank in overlay and MediaPipe skeleton not rendering — video element not connected to canvas or pose tracking starting before video stream is ready"
   ],
-  "isFixRequest": true,
+  "isFixRequest": false,
   "existing_features": [
     {
       "id": "feature-build-a-single-page-react-game-layout-with-a-squid-game-aesthetic-near-black-background-hot-pink-red-accents-ff0066-ff3333-stark-white-text-bold-cinematic-typography-and-a-full-viewport-dark-game-container",
@@ -187,12 +186,64 @@
         "REQ-21"
       ],
       "version": 1
+    },
+    {
+      "id": "feature-in-movementdetection-ts-replace-the-existing-frame-averaging-smoothing-with-exponential-smoothing-using-the-formula-smootheddelta-prevdelta-0-8-currentdelta-0-2-the-previous-smoothed-value-must-persist-between-frames-not-reset-per-call-so-the-exponential-decay-accumulates-correctly-across-the-animation-loop",
+      "title": "In movementDetection.ts, replace the existing frame-averaging smoothing with exponential smoothing using the formula: smoothedDelta = (prevDelta × 0.8) + (currentDelta × 0.2). The previous smoothed value must persist between frames (not reset per call) so the exponential decay accumulates correctly across the animation loop.",
+      "reqIds": [
+        "REQ-22"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-in-movementdetection-ts-restrict-landmark-tracking-to-shoulders-indices-11-12-hips-indices-23-24-and-nose-index-0-only-remove-any-calculations-that-include-wrists-indices-15-16-or-ankles-indices-27-28-from-the-movement-delta-computation-average-movement-across-only-these-stable-landmarks",
+      "title": "In movementDetection.ts, restrict landmark tracking to shoulders (indices 11, 12), hips (indices 23, 24), and nose (index 0) only. Remove any calculations that include wrists (indices 15, 16) or ankles (indices 27, 28) from the movement delta computation. Average movement across only these stable landmarks.",
+      "reqIds": [
+        "REQ-23"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-in-movementdetection-ts-apply-a-configurable-base-movement-threshold-default-value-in-the-range-0-02-0-05-as-a-pre-filter-before-the-dead-zone-clamp-any-per-landmark-delta-below-this-base-threshold-must-be-treated-as-zero-before-it-enters-the-smoothing-pipeline-preventing-micro-movements-from-accumulating-in-the-smoothed-score",
+      "title": "In movementDetection.ts, apply a configurable base movement threshold (default value in the range 0.02–0.05) as a pre-filter before the dead-zone clamp. Any per-landmark delta below this base threshold must be treated as zero before it enters the smoothing pipeline, preventing micro-movements from accumulating in the smoothed score.",
+      "reqIds": [
+        "REQ-24"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-in-gamestate-ts-and-usegamestate-ts-implement-a-time-confirmation-window-for-elimination-when-in-the-red-light-phase-start-a-timer-the-first-time-the-movement-score-exceeds-the-elimination-threshold-only-transition-to-the-eliminated-state-if-the-score-has-remained-continuously-above-the-threshold-for-at-least-200ms-if-the-score-drops-below-the-threshold-before-the-window-elapses-reset-the-timer-without-triggering-elimination",
+      "title": "In gameState.ts and useGameState.ts, implement a time confirmation window for elimination: when in the red-light phase, start a timer the first time the movement score exceeds the elimination threshold. Only transition to the 'eliminated' state if the score has remained continuously above the threshold for at least 200ms. If the score drops below the threshold before the window elapses, reset the timer without triggering elimination.",
+      "reqIds": [
+        "REQ-25"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-in-movementdetection-ts-make-the-exponential-smoothing-asymmetric-when-the-current-per-landmark-delta-after-base-threshold-pre-filter-is-zero-or-below-the-base-threshold-meaning-the-player-has-stopped-moving-reset-the-smoothed-score-to-zero-immediately-rather-than-decaying-it-gradually-only-apply-the-slow-decay-formula-smootheddelta-prevdelta-0-8-currentdelta-0-2-when-active-movement-is-detected-this-ensures-the-exported-movement-score-drops-to-zero-the-moment-no-movement-is-registered-eliminating-the-perceived-lag-when-the-player-freezes",
+      "title": "In movementDetection.ts, make the exponential smoothing asymmetric: when the current per-landmark delta (after base-threshold pre-filter) is zero or below the base threshold — meaning the player has stopped moving — reset the smoothed score to zero immediately rather than decaying it gradually. Only apply the slow decay formula (smoothedDelta = prevDelta × 0.8 + currentDelta × 0.2) when active movement is detected. This ensures the exported movement score drops to zero the moment no movement is registered, eliminating the perceived lag when the player freezes.",
+      "reqIds": [
+        "REQ-26"
+      ],
+      "version": 1
     }
   ],
   "new_feature_requests": [
     {
       "id": "AR-1",
       "summary": "Dead zone mechanic: movement below 10% of the threshold during Red Light = safe (no elimination); during Green Light = no progress. Applies relative to the current sensitivity threshold.",
+      "reqIds": [],
+      "status": "pending"
+    },
+    {
+      "id": "AR-2",
+      "summary": "Anti-false-elimination improvements: (1) configurable movement threshold 0.02–0.05, (2) exponential smoothing (prevDelta×0.8 + currentDelta×0.2), (3) stable landmarks only (shoulders, hips, nose — drop wrists/ankles), (4) time confirmation window of 200–300ms before elimination triggers.",
+      "reqIds": [],
+      "status": "pending"
+    },
+    {
+      "id": "AR-3",
+      "summary": "Reduce smoothing delay when player stops moving — movement score should drop to zero (or near-zero) immediately when no movement is detected, rather than decaying slowly.",
       "reqIds": [],
       "status": "pending"
     }

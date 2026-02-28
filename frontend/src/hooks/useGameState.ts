@@ -6,8 +6,9 @@ import {
   shouldAdvanceProgress,
   shouldEliminate,
   nextPhaseAfterLight,
+  CONFIRMATION_WINDOW_MS,
 } from '../modules/gameState';
-import { clampToDeadZone } from '../modules/movementDetection';
+import { clampToDeadZone, resetMovementSmoother } from '../modules/movementDetection';
 import {
   playGreenLightSound,
   playRedLightSound,
@@ -42,6 +43,13 @@ export function useGameState(
   const movementScoreRef = useRef(movementScore);
   const sensitivityRef = useRef(sensitivity);
 
+  /**
+   * Time confirmation window state for red-light elimination.
+   * confirmationStartRef: timestamp (ms) when sustained movement above threshold began.
+   * null means no active confirmation timer.
+   */
+  const confirmationStartRef = useRef<number | null>(null);
+
   // Keep refs in sync
   useEffect(() => {
     movementScoreRef.current = movementScore;
@@ -70,6 +78,8 @@ export function useGameState(
     lightTimerRef.current = setTimeout(() => {
       const next = nextPhaseAfterLight(currentPhase);
       setPhaseAndRef(next);
+      // Reset confirmation timer whenever the light phase changes
+      confirmationStartRef.current = null;
       if (next === 'green-light') {
         playGreenLightSound();
       } else {
@@ -88,6 +98,9 @@ export function useGameState(
 
   const startGame = useCallback(() => {
     clearAllTimers();
+    // Reset the exponential smoother so stale state from a previous game doesn't bleed in
+    resetMovementSmoother();
+    confirmationStartRef.current = null;
     setPhaseAndRef('countdown');
     setProgress(0);
     progressRef.current = 0;
@@ -114,6 +127,8 @@ export function useGameState(
 
   const resetGame = useCallback(() => {
     clearAllTimers();
+    resetMovementSmoother();
+    confirmationStartRef.current = null;
     setPhaseAndRef('idle');
     setProgress(0);
     progressRef.current = 0;
@@ -136,6 +151,9 @@ export function useGameState(
       const score = clampToDeadZone(rawScore, sens);
 
       if (currentPhase === 'green-light') {
+        // Reset confirmation timer when entering green light
+        confirmationStartRef.current = null;
+
         if (shouldAdvanceProgress(currentPhase, score, sens)) {
           const newProgress = Math.min(progressRef.current + 0.3, 100);
           progressRef.current = newProgress;
@@ -149,17 +167,44 @@ export function useGameState(
           }
         }
       } else if (currentPhase === 'red-light') {
+        // Time confirmation window for elimination:
+        // Only eliminate if movement stays above threshold for CONFIRMATION_WINDOW_MS continuously.
+        //
+        // Guard 1 (dead zone): score must be > 0 after clampToDeadZone (already applied above).
+        // Guard 2 (shouldEliminate): score must exceed the sensitivity threshold.
+        // Guard 3 (time window): movement must be sustained for ≥ CONFIRMATION_WINDOW_MS.
+
         if (shouldEliminate(currentPhase, score, sens)) {
-          clearAllTimers();
-          setPhaseAndRef('eliminated');
-          playEliminationSound();
-          return;
+          // Movement is above threshold — start or continue the confirmation timer
+          if (confirmationStartRef.current === null) {
+            // First frame above threshold — start the timer
+            confirmationStartRef.current = Date.now();
+          } else {
+            // Check if the confirmation window has elapsed
+            const elapsed = Date.now() - confirmationStartRef.current;
+            if (elapsed >= CONFIRMATION_WINDOW_MS) {
+              // Sustained movement confirmed — eliminate the player
+              clearAllTimers();
+              confirmationStartRef.current = null;
+              setPhaseAndRef('eliminated');
+              playEliminationSound();
+              return;
+            }
+            // Still within the window — keep waiting
+          }
+        } else {
+          // Movement dropped below threshold — reset the confirmation timer
+          confirmationStartRef.current = null;
         }
       }
     };
 
     const interval = setInterval(checkMovement, 50);
-    return () => clearInterval(interval);
+    return () => {
+      clearInterval(interval);
+      // Reset confirmation timer when the effect re-runs (phase change)
+      confirmationStartRef.current = null;
+    };
   }, [phase, clearAllTimers, setPhaseAndRef]);
 
   // Cleanup on unmount
